@@ -1,0 +1,334 @@
+
+<style>
+  .tabs { display: flex; gap: 0; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 0; }
+  .tab { padding: 10px 18px; font-size: 13px; cursor: pointer; border: none; background: none; color: var(--color-text-secondary); border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+  .tab.active { color: var(--color-text-primary); border-bottom-color: var(--color-text-primary); font-weight: 500; }
+  .panels { display: flex; gap: 32px; padding: 24px 0; }
+  .phone-frame { flex: 0 0 200px; background: var(--color-background-secondary); border-radius: 24px; border: 1.5px solid var(--color-border-secondary); padding: 12px; display: flex; flex-direction: column; align-items: center; min-height: 360px; }
+  .phone-screen { width: 100%; flex: 1; background: white; border-radius: 16px; padding: 16px 12px; display: flex; flex-direction: column; gap: 10px; }
+  .code-panel { flex: 1; min-width: 0; }
+  .code-block { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 16px; font-family: var(--font-mono); font-size: 11.5px; line-height: 1.6; color: var(--color-text-secondary); overflow-x: auto; white-space: pre; }
+  .kw { color: #7F77DD; }
+  .str { color: #1D9E75; }
+  .fn { color: #185FA5; }
+  .cmt { color: var(--color-text-tertiary); font-style: italic; }
+  .num { color: #D85A30; }
+  .panel { display: none; }
+  .panel.active { display: flex; flex-direction: column; }
+  .p-label { font-size: 11px; color: #888; text-align: center; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .sim-title { font-size: 13px; font-weight: 500; color: #111; text-align: center; margin-bottom: 4px; }
+  .sim-input { width: 100%; border: 0.5px solid #ccc; border-radius: 6px; padding: 6px 8px; font-size: 12px; box-sizing: border-box; }
+  .sim-btn { width: 100%; background: #7F77DD; color: white; border: none; border-radius: 8px; padding: 8px; font-size: 12px; cursor: pointer; font-weight: 500; }
+  .sim-btn:active { opacity: 0.8; }
+  .sim-btn-gray { background: #e0e0e0; color: #333; }
+  .sim-result { font-size: 14px; font-weight: 500; color: #111; text-align: center; padding: 8px; background: #f5f4ff; border-radius: 8px; }
+  .sim-count { font-size: 32px; font-weight: 700; color: #7F77DD; text-align: center; padding: 12px 0; }
+  .sim-img-box { width: 100%; height: 100px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 0.5px solid #eee; }
+  .sim-hint { font-size: 10px; color: #aaa; text-align: center; }
+</style>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab(0)">1. Калькулятор</button>
+  <button class="tab" onclick="switchTab(1)">2. Зображення</button>
+  <button class="tab" onclick="switchTab(2)">3. Лічильник</button>
+</div>
+
+<div id="p0" class="panel active">
+  <div class="panels">
+    <div>
+      <div class="p-label">Превʼю</div>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="sim-title">Калькулятор суми</div>
+          <input class="sim-input" id="n1" type="number" placeholder="Перше число" />
+          <input class="sim-input" id="n2" type="number" placeholder="Друге число" />
+          <button class="sim-btn" onclick="calcSum()">Обчислити суму</button>
+          <div class="sim-result" id="res0" style="display:none"></div>
+          <div class="sim-hint">← Інтерактивне превʼю</div>
+        </div>
+      </div>
+    </div>
+    <div class="code-panel">
+      <div class="code-block"><span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> {
+  View, Text, TextInput,
+  TouchableOpacity, StyleSheet
+} <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [num1, setNum1] = <span class="fn">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [num2, setNum2] = <span class="fn">useState</span>(<span class="str">''</span>);
+  <span class="kw">const</span> [result, setResult] = <span class="fn">useState</span>(<span class="kw">null</span>);
+
+  <span class="kw">const</span> <span class="fn">handleCalculate</span> = () => {
+    <span class="kw">const</span> sum = <span class="fn">parseFloat</span>(num1) + <span class="fn">parseFloat</span>(num2);
+    <span class="fn">setResult</span>(sum);
+  };
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={styles.title}&gt;Калькулятор суми&lt;/Text&gt;
+
+      &lt;TextInput
+        style={styles.input}
+        placeholder=<span class="str">"Перше число"</span>
+        keyboardType=<span class="str">"numeric"</span>
+        value={num1}
+        onChangeText={<span class="fn">setNum1</span>}
+      /&gt;
+      &lt;TextInput
+        style={styles.input}
+        placeholder=<span class="str">"Друге число"</span>
+        keyboardType=<span class="str">"numeric"</span>
+        value={num2}
+        onChangeText={<span class="fn">setNum2</span>}
+      /&gt;
+
+      &lt;TouchableOpacity
+        style={styles.button}
+        onPress={<span class="fn">handleCalculate</span>}
+      &gt;
+        &lt;Text style={styles.buttonText}&gt;
+          Обчислити суму
+        &lt;/Text&gt;
+      &lt;/TouchableOpacity&gt;
+
+      {result !== <span class="kw">null</span> &amp;&amp; (
+        &lt;Text style={styles.result}&gt;
+          Результат: {result}
+        &lt;/Text&gt;
+      )}
+    &lt;/View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  container: {
+    flex: <span class="num">1</span>,
+    padding: <span class="num">24</span>,
+    backgroundColor: <span class="str">'#fff'</span>,
+    justifyContent: <span class="str">'center'</span>,
+  },
+  title: {
+    fontSize: <span class="num">22</span>, fontWeight: <span class="str">'bold'</span>,
+    textAlign: <span class="str">'center'</span>, marginBottom: <span class="num">24</span>,
+  },
+  input: {
+    borderWidth: <span class="num">1</span>, borderColor: <span class="str">'#ccc'</span>,
+    borderRadius: <span class="num">8</span>, padding: <span class="num">12</span>,
+    marginBottom: <span class="num">12</span>, fontSize: <span class="num">16</span>,
+  },
+  button: {
+    backgroundColor: <span class="str">'#6C63FF'</span>,
+    padding: <span class="num">14</span>, borderRadius: <span class="num">8</span>,
+    alignItems: <span class="str">'center'</span>, marginTop: <span class="num">8</span>,
+  },
+  buttonText: {
+    color: <span class="str">'#fff'</span>, fontSize: <span class="num">16</span>, fontWeight: <span class="str">'bold'</span>,
+  },
+  result: {
+    fontSize: <span class="num">20</span>, textAlign: <span class="str">'center'</span>,
+    marginTop: <span class="num">20</span>, color: <span class="str">'#333'</span>,
+  },
+});</div>
+    </div>
+  </div>
+</div>
+
+<div id="p1" class="panel">
+  <div class="panels">
+    <div>
+      <div class="p-label">Превʼю</div>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="sim-title">Натисни на фото</div>
+          <div class="sim-img-box" id="imgBox" onclick="toggleImg()" title="Натисни для зміни">
+            <svg id="img1" viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg" width="160" height="100">
+              <rect width="160" height="100" fill="#E6F1FB"/>
+              <circle cx="80" cy="38" r="22" fill="#378ADD"/>
+              <rect x="40" y="66" width="80" height="28" rx="14" fill="#378ADD"/>
+              <text x="80" y="88" text-anchor="middle" fill="#E6F1FB" font-size="10">Аватар 1</text>
+            </svg>
+            <svg id="img2" viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg" width="160" height="100" style="display:none">
+              <rect width="160" height="100" fill="#E1F5EE"/>
+              <polygon points="80,20 120,80 40,80" fill="#1D9E75"/>
+              <text x="80" y="94" text-anchor="middle" fill="#0F6E56" font-size="10">Аватар 2</text>
+            </svg>
+          </div>
+          <div id="imgLabel" style="text-align:center;font-size:11px;color:#888">Зображення 1 — натисни для зміни</div>
+          <div class="sim-hint">← Інтерактивне превʼю</div>
+        </div>
+      </div>
+    </div>
+    <div class="code-panel">
+      <div class="code-block"><span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> {
+  View, Image,
+  TouchableOpacity, StyleSheet
+} <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">const</span> IMAGE_1 = {
+  uri: <span class="str">'https://picsum.photos/300/200?random=1'</span>
+};
+<span class="kw">const</span> IMAGE_2 = {
+  uri: <span class="str">'https://picsum.photos/300/200?random=2'</span>
+};
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [isFirst, setIsFirst] = <span class="fn">useState</span>(<span class="kw">true</span>);
+
+  <span class="kw">const</span> currentImage = isFirst ? IMAGE_1 : IMAGE_2;
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;TouchableOpacity
+        onPress={() => <span class="fn">setIsFirst</span>(!isFirst)}
+        activeOpacity={<span class="num">0.8</span>}
+      &gt;
+        &lt;Image
+          source={currentImage}
+          style={styles.image}
+          resizeMode=<span class="str">"cover"</span>
+        /&gt;
+      &lt;/TouchableOpacity&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  container: {
+    flex: <span class="num">1</span>,
+    justifyContent: <span class="str">'center'</span>,
+    alignItems: <span class="str">'center'</span>,
+    backgroundColor: <span class="str">'#fff'</span>,
+  },
+  image: {
+    width: <span class="num">300</span>,
+    height: <span class="num">300</span>,
+    borderRadius: <span class="num">12</span>,
+  },
+});</div>
+    </div>
+  </div>
+</div>
+
+<div id="p2" class="panel">
+  <div class="panels">
+    <div>
+      <div class="p-label">Превʼю</div>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="sim-title">Лічильник</div>
+          <div class="sim-count" id="counter">0</div>
+          <button class="sim-btn" onclick="increment()">Натисни мене</button>
+          <div style="height:8px"></div>
+          <button class="sim-btn sim-btn-gray" onclick="resetCount()">Скинути</button>
+          <div class="sim-hint">← Інтерактивне превʼю</div>
+        </div>
+      </div>
+    </div>
+    <div class="code-panel">
+      <div class="code-block"><span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> {
+  View, Text,
+  TouchableOpacity, StyleSheet
+} <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={styles.countText}&gt;
+        {count}
+      &lt;/Text&gt;
+
+      &lt;TouchableOpacity
+        style={styles.button}
+        onPress={() => <span class="fn">setCount</span>(count + <span class="num">1</span>)}
+      &gt;
+        &lt;Text style={styles.buttonText}&gt;
+          Натисни мене
+        &lt;/Text&gt;
+      &lt;/TouchableOpacity&gt;
+
+      &lt;TouchableOpacity
+        style={[styles.button, styles.resetBtn]}
+        onPress={() => <span class="fn">setCount</span>(<span class="num">0</span>)}
+      &gt;
+        &lt;Text style={[styles.buttonText, styles.resetText]}&gt;
+          Скинути
+        &lt;/Text&gt;
+      &lt;/TouchableOpacity&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  container: {
+    flex: <span class="num">1</span>,
+    justifyContent: <span class="str">'center'</span>,
+    alignItems: <span class="str">'center'</span>,
+    backgroundColor: <span class="str">'#fff'</span>,
+    padding: <span class="num">24</span>,
+    gap: <span class="num">16</span>,
+  },
+  countText: {
+    fontSize: <span class="num">72</span>,
+    fontWeight: <span class="str">'bold'</span>,
+    color: <span class="str">'#6C63FF'</span>,
+  },
+  button: {
+    backgroundColor: <span class="str">'#6C63FF'</span>,
+    paddingVertical: <span class="num">14</span>,
+    paddingHorizontal: <span class="num">48</span>,
+    borderRadius: <span class="num">8</span>,
+    width: <span class="str">'100%'</span>,
+    alignItems: <span class="str">'center'</span>,
+  },
+  buttonText: {
+    color: <span class="str">'#fff'</span>,
+    fontSize: <span class="num">18</span>,
+    fontWeight: <span class="str">'bold'</span>,
+  },
+  resetBtn: {
+    backgroundColor: <span class="str">'#e0e0e0'</span>,
+  },
+  resetText: {
+    color: <span class="str">'#333'</span>,
+  },
+});</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(i) {
+    document.querySelectorAll('.tab').forEach((t,j) => t.classList.toggle('active', i===j));
+    document.querySelectorAll('.panel').forEach((p,j) => p.classList.toggle('active', i===j));
+  }
+  function calcSum() {
+    const a = parseFloat(document.getElementById('n1').value);
+    const b = parseFloat(document.getElementById('n2').value);
+    const r = document.getElementById('res0');
+    if (isNaN(a) || isNaN(b)) { r.style.display='block'; r.textContent='Введіть обидва числа'; return; }
+    r.style.display='block';
+    r.textContent = 'Результат: ' + (a + b);
+  }
+  let imgState = true;
+  function toggleImg() {
+    imgState = !imgState;
+    document.getElementById('img1').style.display = imgState ? 'block' : 'none';
+    document.getElementById('img2').style.display = imgState ? 'none' : 'block';
+    document.getElementById('imgLabel').textContent = imgState ? 'Зображення 1 — натисни для зміни' : 'Зображення 2 — натисни для зміни';
+  }
+  let cnt = 0;
+  function increment() {
+    cnt++;
+    document.getElementById('counter').textContent = cnt;
+  }
+  function resetCount() {
+    cnt = 0;
+    document.getElementById('counter').textContent = 0;
+  }
+</script>

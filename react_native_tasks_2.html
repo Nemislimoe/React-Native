@@ -1,0 +1,355 @@
+
+<style>
+  .tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:0}
+  .tab{padding:10px 16px;font-size:13px;cursor:pointer;border:none;background:none;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-0.5px}
+  .tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary);font-weight:500}
+  .panels{display:flex;gap:28px;padding:20px 0}
+  .phone-frame{flex:0 0 192px;background:var(--color-background-secondary);border-radius:24px;border:1.5px solid var(--color-border-secondary);padding:10px;display:flex;flex-direction:column;align-items:center;min-height:380px}
+  .phone-screen{width:100%;flex:1;background:white;border-radius:16px;padding:14px 12px;display:flex;flex-direction:column;gap:8px;overflow:hidden;transition:background .3s}
+  .code-panel{flex:1;min-width:0}
+  .code-block{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:14px;font-family:var(--font-mono);font-size:11px;line-height:1.65;color:var(--color-text-secondary);overflow-x:auto;white-space:pre;max-height:460px;overflow-y:auto}
+  .kw{color:#7F77DD}.str{color:#1D9E75}.fn{color:#185FA5}.cmt{color:var(--color-text-tertiary);font-style:italic}.num{color:#D85A30}.tag{color:#993C1D}
+  .panel{display:none}.panel.active{display:flex;flex-direction:column}
+  .p-label{font-size:11px;color:#888;text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+  .sim-hint{font-size:10px;color:#aaa;text-align:center;margin-top:auto}
+  .sim-title{font-size:13px;font-weight:600;text-align:center;margin-bottom:4px}
+  .color-btn{border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;color:white;font-weight:500;margin:2px}
+  .task-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;border:0.5px solid #eee;cursor:pointer;font-size:12px;transition:all .2s}
+  .task-done{text-decoration:line-through;color:#aaa;background:#f9f9f9}
+  .task-check{width:16px;height:16px;border-radius:4px;border:1.5px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s}
+  .task-checked{background:#7F77DD;border-color:#7F77DD;color:white}
+  .theme-btn{width:100%;border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;font-weight:600;transition:all .3s}
+  .section-label{font-size:10px;font-weight:600;letter-spacing:.06em;color:#aaa;text-transform:uppercase;margin-bottom:2px}
+  .color-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+  .heading-preview{font-size:18px;font-weight:700;text-align:center;padding:10px 4px;border-radius:8px;transition:all .3s;background:#f5f5f5}
+</style>
+
+<h2 class="sr-only">Практичне завдання 2: JSX та компоненти — динамічний заголовок, список завдань, перемикач теми</h2>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab(0)">1. Заголовок</button>
+  <button class="tab" onclick="switchTab(1)">2. Список завдань</button>
+  <button class="tab" onclick="switchTab(2)">3. Тема</button>
+</div>
+
+<!-- TAB 1 -->
+<div id="p0" class="panel active">
+  <div class="panels">
+    <div>
+      <div class="p-label">Превʼю</div>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="sim-title">Динамічний заголовок</div>
+          <div class="section-label">Текст заголовка</div>
+          <input id="htext" type="text" value="Привіт, Світ!" style="width:100%;border:0.5px solid #ccc;border-radius:6px;padding:5px 8px;font-size:11px;box-sizing:border-box" oninput="updateH()"/>
+          <div class="section-label" style="margin-top:6px">Колір</div>
+          <div class="color-row">
+            <button class="color-btn" style="background:#7F77DD" onclick="setHColor('#7F77DD')">Фіолет.</button>
+            <button class="color-btn" style="background:#1D9E75" onclick="setHColor('#1D9E75')">Зелений</button>
+            <button class="color-btn" style="background:#D85A30" onclick="setHColor('#D85A30')">Корал</button>
+            <button class="color-btn" style="background:#185FA5" onclick="setHColor('#185FA5')">Синій</button>
+          </div>
+          <div class="heading-preview" id="hpreview" style="color:#7F77DD">Привіт, Світ!</div>
+          <div class="sim-hint">← Інтерактивне превʼю</div>
+        </div>
+      </div>
+    </div>
+    <div class="code-panel">
+      <div class="code-block"><span class="cmt">// DynamicHeading.js — дочірній компонент</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { Text, StyleSheet } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">DynamicHeading</span>({ title, color }) {
+  <span class="kw">return</span> (
+    &lt;Text style={[styles.heading, { color }]}&gt;
+      {title}
+    &lt;/Text&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  heading: {
+    fontSize: <span class="num">28</span>,
+    fontWeight: <span class="str">'bold'</span>,
+    textAlign: <span class="str">'center'</span>,
+    marginVertical: <span class="num">16</span>,
+  },
+});
+
+<span class="cmt">// ─────────────────────────────────────────
+// App.js — батьківський компонент</span>
+<span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, TextInput, StyleSheet } <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> DynamicHeading <span class="kw">from</span> <span class="str">'./DynamicHeading'</span>;
+
+<span class="kw">const</span> COLORS = [
+  <span class="str">'#6C63FF'</span>, <span class="str">'#1D9E75'</span>, <span class="str">'#D85A30'</span>, <span class="str">'#185FA5'</span>
+];
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [title, setTitle] = <span class="fn">useState</span>(<span class="str">'Привіт, Світ!'</span>);
+  <span class="kw">const</span> [color, setColor] = <span class="fn">useState</span>(COLORS[<span class="num">0</span>]);
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      <span class="cmt">{/* Передаємо пропси в дочірній компонент */}</span>
+      &lt;DynamicHeading title={title} color={color} /&gt;
+
+      &lt;TextInput
+        style={styles.input}
+        value={title}
+        onChangeText={<span class="fn">setTitle</span>}
+        placeholder=<span class="str">"Введіть заголовок"</span>
+      /&gt;
+
+      &lt;View style={styles.colorRow}&gt;
+        {COLORS.<span class="fn">map</span>((c) => (
+          &lt;TouchableOpacity
+            key={c}
+            style={[styles.colorBtn, { backgroundColor: c }]}
+            onPress={() => <span class="fn">setColor</span>(c)}
+          /&gt;
+        ))}
+      &lt;/View&gt;
+    &lt;/View&gt;
+  );
+}</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2 -->
+<div id="p1" class="panel">
+  <div class="panels">
+    <div>
+      <div class="p-label">Превʼю</div>
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="sim-title">Список завдань</div>
+          <div id="tasklist"></div>
+          <div class="sim-hint" style="margin-top:8px">← Натисни на завдання</div>
+        </div>
+      </div>
+    </div>
+    <div class="code-panel">
+      <div class="code-block"><span class="cmt">// TaskItem.js — компонент одного завдання</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { TouchableOpacity, Text, View, StyleSheet }
+  <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">TaskItem</span>({ task, onToggle }) {
+  <span class="kw">return</span> (
+    &lt;TouchableOpacity
+      style={[
+        styles.item,
+        task.done &amp;&amp; styles.itemDone
+      ]}
+      onPress={() => <span class="fn">onToggle</span>(task.id)}
+    &gt;
+      &lt;View style={[
+        styles.checkbox,
+        task.done &amp;&amp; styles.checkboxDone
+      ]}&gt;
+        {task.done &amp;&amp; &lt;Text style={styles.check}&gt;✓&lt;/Text&gt;}
+      &lt;/View&gt;
+      &lt;Text style={[
+        styles.text,
+        task.done &amp;&amp; styles.textDone
+      ]}&gt;
+        {task.text}
+      &lt;/Text&gt;
+    &lt;/TouchableOpacity&gt;
+  );
+}
+
+<span class="cmt">// ─────────────────────────────────────────
+// TaskList.js — компонент списку</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, FlatList } <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> TaskItem <span class="kw">from</span> <span class="str">'./TaskItem'</span>;
+
+<span class="kw">export default function</span> <span class="fn">TaskList</span>({ tasks, onToggle }) {
+  <span class="kw">return</span> (
+    &lt;FlatList
+      data={tasks}
+      keyExtractor={(item) => <span class="fn">String</span>(item.id)}
+      renderItem={({ item }) => (
+        &lt;TaskItem task={item} onToggle={<span class="fn">onToggle</span>} /&gt;
+      )}
+    /&gt;
+  );
+}
+
+<span class="cmt">// ─────────────────────────────────────────
+// App.js</span>
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [tasks, setTasks] = <span class="fn">useState</span>([
+    { id: <span class="num">1</span>, text: <span class="str">'Вивчити React Native'</span>, done: <span class="kw">false</span> },
+    { id: <span class="num">2</span>, text: <span class="str">'Зрозуміти JSX'</span>,       done: <span class="kw">false</span> },
+    { id: <span class="num">3</span>, text: <span class="str">'Зробити домашнє завдання'</span>, done: <span class="kw">false</span> },
+  ]);
+
+  <span class="kw">const</span> <span class="fn">toggleTask</span> = (id) => {
+    <span class="fn">setTasks</span>(tasks.<span class="fn">map</span>((t) =>
+      t.id === id ? { ...t, done: !t.done } : t
+    ));
+  };
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;TaskList tasks={tasks} onToggle={<span class="fn">toggleTask</span>} /&gt;
+    &lt;/View&gt;
+  );
+}</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3 -->
+<div id="p2" class="panel">
+  <div class="panels">
+    <div>
+      <div class="p-label">Превʼю</div>
+      <div class="phone-frame">
+        <div class="phone-screen" id="themeScreen">
+          <div class="sim-title" id="themeTitle">Перемикач теми</div>
+          <div id="themeCard" style="border-radius:10px;padding:12px;margin:4px 0;border:0.5px solid #eee">
+            <div style="font-size:11px;font-weight:600;margin-bottom:4px" id="cardTitle">Поточна тема</div>
+            <div style="font-size:11px" id="cardText">Це дочірній компонент, який отримує колір фону через пропси від батька.</div>
+          </div>
+          <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙 Темна тема</button>
+          <div class="sim-hint">← Натисни кнопку</div>
+        </div>
+      </div>
+    </div>
+    <div class="code-panel">
+      <div class="code-block"><span class="cmt">// ThemedCard.js — дочірній компонент</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, Text, StyleSheet } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">ThemedCard</span>({ bgColor, textColor }) {
+  <span class="kw">return</span> (
+    &lt;View style={[styles.card, { backgroundColor: bgColor }]}&gt;
+      &lt;Text style={[styles.title, { color: textColor }]}&gt;
+        Поточна тема
+      &lt;/Text&gt;
+      &lt;Text style={[styles.body, { color: textColor }]}&gt;
+        Це дочірній компонент, який
+        отримує колір через пропси.
+      &lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="cmt">// ─────────────────────────────────────────
+// App.js — батьківський компонент</span>
+<span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, TouchableOpacity, Text }
+  <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> ThemedCard <span class="kw">from</span> <span class="str">'./ThemedCard'</span>;
+
+<span class="kw">const</span> THEMES = {
+  light: {
+    bg:       <span class="str">'#FFFFFF'</span>,
+    cardBg:   <span class="str">'#F4F4F4'</span>,
+    text:     <span class="str">'#111111'</span>,
+    btnBg:    <span class="str">'#222222'</span>,
+    btnText:  <span class="str">'#FFFFFF'</span>,
+    label:    <span class="str">'🌙 Темна тема'</span>,
+  },
+  dark: {
+    bg:       <span class="str">'#1A1A2E'</span>,
+    cardBg:   <span class="str">'#16213E'</span>,
+    text:     <span class="str">'#EAEAEA'</span>,
+    btnBg:    <span class="str">'#E2E2E2'</span>,
+    btnText:  <span class="str">'#111111'</span>,
+    label:    <span class="str">'☀️ Світла тема'</span>,
+  },
+};
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [isDark, setIsDark] = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> theme = isDark ? THEMES.dark : THEMES.light;
+
+  <span class="kw">return</span> (
+    &lt;View style={[styles.container, { backgroundColor: theme.bg }]}&gt;
+      <span class="cmt">{/* Передаємо кольори через пропси */}</span>
+      &lt;ThemedCard
+        bgColor={theme.cardBg}
+        textColor={theme.text}
+      /&gt;
+
+      &lt;TouchableOpacity
+        style={[styles.btn, { backgroundColor: theme.btnBg }]}
+        onPress={() => <span class="fn">setIsDark</span>(!isDark)}
+      &gt;
+        &lt;Text style={{ color: theme.btnText }}&gt;
+          {theme.label}
+        &lt;/Text&gt;
+      &lt;/TouchableOpacity&gt;
+    &lt;/View&gt;
+  );
+}</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));
+}
+
+// Task 1
+function updateH(){
+  const t=document.getElementById('htext').value;
+  document.getElementById('hpreview').textContent=t||'…';
+}
+function setHColor(c){
+  document.getElementById('hpreview').style.color=c;
+}
+
+// Task 2
+const tasks=[
+  {id:1,text:'Вивчити React Native',done:false},
+  {id:2,text:'Зрозуміти JSX',done:false},
+  {id:3,text:'Зробити домашнє завдання',done:false},
+  {id:4,text:'Налаштувати середовище',done:false},
+  {id:5,text:'Запустити перший застосунок',done:false},
+];
+function renderTasks(){
+  const el=document.getElementById('tasklist');
+  el.innerHTML=tasks.map(t=>`
+    <div class="task-item${t.done?' task-done':''}" onclick="toggleTask(${t.id})">
+      <div class="task-check${t.done?' task-checked':''}">${t.done?'✓':''}</div>
+      <span>${t.text}</span>
+    </div>`).join('');
+}
+function toggleTask(id){
+  const t=tasks.find(x=>x.id===id);
+  if(t)t.done=!t.done;
+  renderTasks();
+}
+renderTasks();
+
+// Task 3
+let dark=false;
+const THEMES={
+  light:{bg:'#fff',cardBg:'#f4f4f4',text:'#111',btnBg:'#222',btnText:'#fff',label:'🌙 Темна тема'},
+  dark:{bg:'#1A1A2E',cardBg:'#16213E',text:'#EAEAEA',btnBg:'#E2E2E2',btnText:'#111',label:'☀️ Світла тема'}
+};
+function toggleTheme(){
+  dark=!dark;
+  const th=dark?THEMES.dark:THEMES.light;
+  const s=document.getElementById('themeScreen').style;
+  s.background=th.bg; s.transition='background .3s';
+  document.getElementById('themeTitle').style.color=th.text;
+  const card=document.getElementById('themeCard');
+  card.style.background=th.cardBg; card.style.borderColor=dark?'#333':'#eee';
+  document.getElementById('cardTitle').style.color=th.text;
+  document.getElementById('cardText').style.color=th.text;
+  const btn=document.getElementById('themeBtn');
+  btn.style.background=th.btnBg; btn.style.color=th.btnText;
+  btn.textContent=th.label;
+}
+</script>
