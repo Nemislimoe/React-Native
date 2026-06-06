@@ -1,0 +1,891 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.tabs{display:flex;border-bottom:1px solid var(--color-border-tertiary)}
+.tab{padding:10px 16px;font-size:13px;cursor:pointer;border:none;background:none;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.active{color:var(--color-text-primary);border-bottom-color:#6C63FF;font-weight:600}
+.panel{display:none;flex-direction:row;gap:24px;padding:20px 0}
+.panel.active{display:flex}
+/* Phone */
+.phone-wrap{flex:0 0 190px}
+.p-label{font-size:10px;color:#aaa;text-align:center;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.phone{background:#1a1a2e;border-radius:28px;padding:10px;border:2px solid #333}
+.notch{width:60px;height:8px;background:#333;border-radius:4px;margin:0 auto 8px}
+.screen{background:#f8f8fa;border-radius:18px;overflow:hidden;min-height:360px;display:flex;flex-direction:column}
+.status-bar{background:#fff;padding:4px 12px;font-size:9px;color:#999;display:flex;justify-content:space-between;border-bottom:0.5px solid #eee}
+.content{flex:1;padding:12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+/* Code */
+.code-wrap{flex:1;min-width:0}
+.code-tabs{display:flex;gap:0;margin-bottom:8px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.ct{padding:6px 14px;font-size:11px;cursor:pointer;border:none;background:none;color:var(--color-text-tertiary);border-bottom:2px solid transparent;margin-bottom:-0.5px}
+.ct.active{color:var(--color-text-primary);border-bottom-color:#6C63FF;font-weight:500}
+.cblock{background:var(--color-background-secondary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:14px;font-family:var(--font-mono);font-size:10.5px;line-height:1.7;overflow:auto;max-height:420px;white-space:pre}
+.cfile{display:none}.cfile.active{display:block}
+.kw{color:#9B8FFF}.str{color:#1D9E75}.fn{color:#2176AE}.cm{color:#999;font-style:italic}.nu{color:#D85A30}.tg{color:#c0392b}
+
+/* Sim UI – Task 1 */
+.prod-card{background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);display:flex;gap:10px;align-items:center}
+.prod-emoji{font-size:26px;flex-shrink:0}
+.prod-info{flex:1}
+.prod-name{font-size:12px;font-weight:700;color:#1a1a2e}
+.prod-desc{font-size:10px;color:#888;margin:2px 0}
+.prod-price{font-size:13px;font-weight:800;color:#6C63FF}
+.prod-btn{background:#6C63FF;border:none;border-radius:8px;color:#fff;font-size:10px;padding:4px 10px;cursor:pointer}
+/* Sim UI – Task 2 */
+.reg-screen{background:#fff;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px;min-height:360px;justify-content:center}
+.reg-logo{font-size:28px;text-align:center;margin-bottom:2px}
+.reg-title{font-size:14px;font-weight:700;color:#1a1a2e;text-align:center;margin-bottom:4px}
+.reg-label{font-size:10px;color:#888;margin-bottom:2px;font-weight:500}
+.reg-input{width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:7px 10px;font-size:11px;background:#fafafa;outline:none;transition:border .2s}
+.reg-input:focus{border-color:#6C63FF}
+.reg-btn{width:100%;background:linear-gradient(135deg,#6C63FF,#a78bfa);color:#fff;border:none;border-radius:10px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;margin-top:4px}
+.reg-divider{display:flex;align-items:center;gap:8px;color:#ccc;font-size:10px}
+.reg-divider::before,.reg-divider::after{content:'';flex:1;height:0.5px;background:#e0e0e0}
+.reg-err{font-size:10px;color:#e74c3c;display:none;margin-top:-4px}
+/* Sim UI – Task 3 */
+.nav-bar{background:#fff;border-top:0.5px solid #eee;display:flex;justify-content:space-around;padding:6px 0}
+.nav-item{display:flex;flex-direction:column;align-items:center;font-size:9px;color:#999;cursor:pointer;gap:2px;border:none;background:none;padding:2px 8px}
+.nav-item.active{color:#6C63FF}
+.nav-icon{font-size:16px}
+.home-header{background:linear-gradient(135deg,#6C63FF,#a78bfa);padding:12px;margin:-12px -12px 10px;border-radius:0}
+.home-title{color:#fff;font-size:14px;font-weight:700}
+.home-sub{color:rgba(255,255,255,.75);font-size:10px;margin-top:2px}
+.home-card{background:#fff;border-radius:10px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.home-card-title{font-size:11px;font-weight:700;color:#1a1a2e;margin-bottom:3px}
+.home-card-text{font-size:10px;color:#888}
+.profile-avatar{width:64px;height:64px;border-radius:32px;background:linear-gradient(135deg,#6C63FF,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 8px}
+.profile-name{font-size:14px;font-weight:700;color:#1a1a2e;text-align:center}
+.profile-email{font-size:10px;color:#888;text-align:center;margin-bottom:8px}
+.profile-row{display:flex;justify-content:space-around;background:#fff;border-radius:10px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.profile-stat{text-align:center}
+.profile-stat-num{font-size:15px;font-weight:800;color:#6C63FF}
+.profile-stat-lbl{font-size:9px;color:#aaa}
+.profile-btn{width:100%;background:#6C63FF;color:#fff;border:none;border-radius:8px;padding:8px;font-size:11px;font-weight:600;cursor:pointer}
+</style>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchMain(0)">1. Список товарів</button>
+  <button class="tab" onclick="switchMain(1)">2. Форма реєстрації</button>
+  <button class="tab" onclick="switchMain(2)">3. Глобальні стилі</button>
+</div>
+
+<!-- ══════════ PANEL 1 ══════════ -->
+<div id="mp0" class="panel active">
+  <div class="phone-wrap">
+    <div class="p-label">Превʼю</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="status-bar"><span>9:41</span><span>🔋</span></div>
+        <div class="content" style="background:#f0f0f8">
+          <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:2px">🛍 Каталог товарів</div>
+          <div class="prod-card">
+            <div class="prod-emoji">💻</div>
+            <div class="prod-info">
+              <div class="prod-name">MacBook Air M3</div>
+              <div class="prod-desc">13", 8GB RAM, 256GB SSD</div>
+              <div class="prod-price">₴ 52 999</div>
+            </div>
+            <button class="prod-btn">+ Купити</button>
+          </div>
+          <div class="prod-card">
+            <div class="prod-emoji">📱</div>
+            <div class="prod-info">
+              <div class="prod-name">iPhone 15 Pro</div>
+              <div class="prod-desc">128GB, Titanium</div>
+              <div class="prod-price">₴ 44 500</div>
+            </div>
+            <button class="prod-btn">+ Купити</button>
+          </div>
+          <div class="prod-card">
+            <div class="prod-emoji">🎧</div>
+            <div class="prod-info">
+              <div class="prod-name">AirPods Pro 2</div>
+              <div class="prod-desc">ANC, USB-C</div>
+              <div class="prod-price">₴ 9 299</div>
+            </div>
+            <button class="prod-btn">+ Купити</button>
+          </div>
+          <div class="prod-card">
+            <div class="prod-emoji">⌚</div>
+            <div class="prod-info">
+              <div class="prod-name">Apple Watch S9</div>
+              <div class="prod-desc">45mm, GPS</div>
+              <div class="prod-price">₴ 14 799</div>
+            </div>
+            <button class="prod-btn">+ Купити</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-tabs">
+      <button class="ct active" onclick="switchCode(0,0)">ProductCard.js</button>
+      <button class="ct" onclick="switchCode(0,1)">App.js</button>
+      <button class="ct" onclick="switchCode(0,2)">globalStyles.js</button>
+    </div>
+    <div class="cblock">
+<div id="c0-0" class="cfile active"><span class="cm">// components/ProductCard.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, Text, TouchableOpacity, StyleSheet }
+  <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { globalStyles } <span class="kw">from</span> <span class="str">'../styles/globalStyles'</span>;
+
+<span class="kw">export default function</span> <span class="fn">ProductCard</span>({ product, onBuy }) {
+  <span class="kw">return</span> (
+    &lt;View style={styles.card}&gt;
+      <span class="cm">{/* Emoji-іконка товару */}</span>
+      &lt;Text style={styles.emoji}&gt;{product.icon}&lt;/Text&gt;
+
+      &lt;View style={styles.info}&gt;
+        &lt;Text style={[globalStyles.heading, styles.name]}&gt;
+          {product.name}
+        &lt;/Text&gt;
+        &lt;Text style={globalStyles.bodyText}&gt;
+          {product.description}
+        &lt;/Text&gt;
+        &lt;Text style={[globalStyles.heading, styles.price]}&gt;
+          ₴ {product.price.toLocaleString()}
+        &lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;TouchableOpacity
+        style={styles.button}
+        onPress={() => <span class="fn">onBuy</span>(product)}
+      &gt;
+        &lt;Text style={styles.buttonText}&gt;+ Купити&lt;/Text&gt;
+      &lt;/TouchableOpacity&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  card: {
+    <span class="cm">// Flexbox: горизонтальне розміщення</span>
+    flexDirection: <span class="str">'row'</span>,
+    alignItems: <span class="str">'center'</span>,
+    backgroundColor: <span class="str">'#FFFFFF'</span>,
+    borderRadius: <span class="nu">14</span>,
+    padding: <span class="nu">14</span>,
+    marginBottom: <span class="nu">12</span>,
+    <span class="cm">// Тінь (iOS)</span>
+    shadowColor: <span class="str">'#000'</span>,
+    shadowOffset: { width: <span class="nu">0</span>, height: <span class="nu">2</span> },
+    shadowOpacity: <span class="nu">0.08</span>,
+    shadowRadius: <span class="nu">6</span>,
+    <span class="cm">// Тінь (Android)</span>
+    elevation: <span class="nu">3</span>,
+  },
+  emoji: { fontSize: <span class="nu">32</span>, marginRight: <span class="nu">12</span> },
+  info: { flex: <span class="nu">1</span> }, <span class="cm">// займає весь вільний простір</span>
+  name: { fontSize: <span class="nu">14</span>, marginBottom: <span class="nu">2</span> },
+  price: { fontSize: <span class="nu">16</span>, color: <span class="str">'#6C63FF'</span>, marginTop: <span class="nu">4</span> },
+  button: {
+    backgroundColor: <span class="str">'#6C63FF'</span>,
+    borderRadius: <span class="nu">8</span>,
+    paddingVertical: <span class="nu">6</span>,
+    paddingHorizontal: <span class="nu">12</span>,
+  },
+  buttonText: {
+    color: <span class="str">'#fff'</span>, fontSize: <span class="nu">11</span>, fontWeight: <span class="str">'700'</span>,
+  },
+});</div>
+<div id="c0-1" class="cfile"><span class="cm">// App.js</span>
+<span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> {
+  View, Text, FlatList,
+  StyleSheet, SafeAreaView, Alert
+} <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> ProductCard <span class="kw">from</span> <span class="str">'./components/ProductCard'</span>;
+<span class="kw">import</span> { globalStyles } <span class="kw">from</span> <span class="str">'./styles/globalStyles'</span>;
+
+<span class="kw">const</span> PRODUCTS = [
+  { id: <span class="str">'1'</span>, icon: <span class="str">'💻'</span>, name: <span class="str">'MacBook Air M3'</span>,
+    description: <span class="str">'13", 8GB RAM, 256GB SSD'</span>, price: <span class="nu">52999</span> },
+  { id: <span class="str">'2'</span>, icon: <span class="str">'📱'</span>, name: <span class="str">'iPhone 15 Pro'</span>,
+    description: <span class="str">'128GB, Titanium'</span>,       price: <span class="nu">44500</span> },
+  { id: <span class="str">'3'</span>, icon: <span class="str">'🎧'</span>, name: <span class="str">'AirPods Pro 2'</span>,
+    description: <span class="str">'ANC, USB-C'</span>,            price: <span class="nu">9299</span>  },
+  { id: <span class="str">'4'</span>, icon: <span class="str">'⌚'</span>, name: <span class="str">'Apple Watch S9'</span>,
+    description: <span class="str">'45mm, GPS'</span>,             price: <span class="nu">14799</span> },
+];
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> <span class="fn">handleBuy</span> = (product) => {
+    <span class="fn">Alert.alert</span>(<span class="str">'Додано до кошика'</span>, product.name);
+  };
+
+  <span class="kw">return</span> (
+    &lt;SafeAreaView style={styles.safe}&gt;
+      &lt;View style={styles.header}&gt;
+        &lt;Text style={[globalStyles.heading, styles.headerText]}&gt;
+          🛍 Каталог товарів
+        &lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;FlatList
+        data={PRODUCTS}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.list}
+        renderItem={({ item }) => (
+          &lt;ProductCard product={item} onBuy={<span class="fn">handleBuy</span>} /&gt;
+        )}
+      /&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  safe: { flex: <span class="nu">1</span>, backgroundColor: <span class="str">'#F0F0F8'</span> },
+  header: {
+    backgroundColor: <span class="str">'#6C63FF'</span>,
+    paddingVertical: <span class="nu">20</span>,
+    paddingHorizontal: <span class="nu">16</span>,
+  },
+  headerText: { color: <span class="str">'#fff'</span>, fontSize: <span class="nu">22</span> },
+  list: { padding: <span class="nu">16</span> },
+});</div>
+<div id="c0-2" class="cfile"><span class="cm">// styles/globalStyles.js</span>
+<span class="cm">// Глобальні стилі — єдине джерело дизайн-токенів</span>
+<span class="kw">import</span> { StyleSheet } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export const</span> COLORS = {
+  primary:    <span class="str">'#6C63FF'</span>,
+  secondary:  <span class="str">'#a78bfa'</span>,
+  background: <span class="str">'#F0F0F8'</span>,
+  surface:    <span class="str">'#FFFFFF'</span>,
+  textMain:   <span class="str">'#1A1A2E'</span>,
+  textMuted:  <span class="str">'#888888'</span>,
+  error:      <span class="str">'#E74C3C'</span>,
+};
+
+<span class="kw">export const</span> FONTS = {
+  regular: <span class="str">'System'</span>,
+  sizes: { xs: <span class="nu">10</span>, sm: <span class="nu">12</span>, md: <span class="nu">14</span>, lg: <span class="nu">18</span>, xl: <span class="nu">24</span> },
+};
+
+<span class="kw">export const</span> globalStyles = <span class="fn">StyleSheet.create</span>({
+  heading: {
+    fontWeight: <span class="str">'700'</span>,
+    color: COLORS.textMain,
+    fontFamily: FONTS.regular,
+  },
+  bodyText: {
+    fontSize: FONTS.sizes.sm,
+    color: COLORS.textMuted,
+    lineHeight: <span class="nu">18</span>,
+  },
+  card: {
+    backgroundColor: COLORS.surface,
+    borderRadius: <span class="nu">14</span>,
+    padding: <span class="nu">14</span>,
+    shadowColor: <span class="str">'#000'</span>,
+    shadowOffset: { width: <span class="nu">0</span>, height: <span class="nu">2</span> },
+    shadowOpacity: <span class="nu">0.08</span>,
+    shadowRadius: <span class="nu">6</span>,
+    elevation: <span class="nu">3</span>,
+  },
+  primaryButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: <span class="nu">10</span>,
+    paddingVertical: <span class="nu">14</span>,
+    alignItems: <span class="str">'center'</span>,
+  },
+  primaryButtonText: {
+    color: <span class="str">'#fff'</span>, fontWeight: <span class="str">'700'</span>, fontSize: FONTS.sizes.md,
+  },
+});</div></div>
+  </div>
+</div>
+
+<!-- ══════════ PANEL 2 ══════════ -->
+<div id="mp1" class="panel">
+  <div class="phone-wrap">
+    <div class="p-label">Превʼю</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="status-bar"><span>9:41</span><span>🔋</span></div>
+        <div style="flex:1;background:#f0f0f8;padding:12px;display:flex;flex-direction:column;gap:7px;justify-content:center">
+          <div style="font-size:24px;text-align:center">👤</div>
+          <div style="font-size:14px;font-weight:700;color:#1a1a2e;text-align:center;margin-bottom:4px">Реєстрація</div>
+          <div>
+            <div class="reg-label">Ім'я</div>
+            <input class="reg-input" id="ri_name" placeholder="Введіть ваше ім'я" oninput="simValidate()"/>
+            <div class="reg-err" id="re_name">Поле обов'язкове</div>
+          </div>
+          <div>
+            <div class="reg-label">Email</div>
+            <input class="reg-input" id="ri_email" placeholder="example@mail.com" oninput="simValidate()"/>
+            <div class="reg-err" id="re_email">Невірний формат email</div>
+          </div>
+          <div>
+            <div class="reg-label">Пароль</div>
+            <input class="reg-input" id="ri_pass" type="password" placeholder="Мін. 6 символів" oninput="simValidate()"/>
+            <div class="reg-err" id="re_pass">Мін. 6 символів</div>
+          </div>
+          <div>
+            <div class="reg-label">Підтвердіть пароль</div>
+            <input class="reg-input" id="ri_pass2" type="password" placeholder="Повторіть пароль" oninput="simValidate()"/>
+            <div class="reg-err" id="re_pass2">Паролі не збігаються</div>
+          </div>
+          <button class="reg-btn" onclick="simSubmit()">Зареєструватись</button>
+          <div id="sim_ok" style="display:none;text-align:center;font-size:11px;color:#1D9E75;font-weight:600">✅ Успішно зареєстровано!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-tabs">
+      <button class="ct active" onclick="switchCode(1,0)">FormInput.js</button>
+      <button class="ct" onclick="switchCode(1,1)">App.js</button>
+      <button class="ct" onclick="switchCode(1,2)">validation.js</button>
+    </div>
+    <div class="cblock">
+<div id="c1-0" class="cfile active"><span class="cm">// components/FormInput.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, Text, TextInput, StyleSheet }
+  <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">FormInput</span>({
+  label, value, onChangeText,
+  placeholder, secureTextEntry,
+  error, keyboardType
+}) {
+  <span class="kw">return</span> (
+    &lt;View style={styles.wrapper}&gt;
+      &lt;Text style={styles.label}&gt;{label}&lt;/Text&gt;
+
+      &lt;TextInput
+        style={[
+          styles.input,
+          error &amp;&amp; styles.inputError  <span class="cm">// червона рамка при помилці</span>
+        ]}
+        value={value}
+        onChangeText={<span class="fn">onChangeText</span>}
+        placeholder={placeholder}
+        placeholderTextColor=<span class="str">'#bbb'</span>
+        secureTextEntry={secureTextEntry}
+        keyboardType={keyboardType ?? <span class="str">'default'</span>}
+        autoCapitalize=<span class="str">'none'</span>
+      /&gt;
+
+      {error ? (
+        &lt;Text style={styles.errorText}&gt;{error}&lt;/Text&gt;
+      ) : null}
+    &lt;/View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  wrapper: { marginBottom: <span class="nu">12</span> },
+  label: {
+    fontSize: <span class="nu">12</span>, fontWeight: <span class="str">'600'</span>,
+    color: <span class="str">'#555'</span>, marginBottom: <span class="nu">4</span>,
+  },
+  input: {
+    width: <span class="str">'100%'</span>,         <span class="cm">// однакова ширина для всіх полів</span>
+    borderWidth: <span class="nu">1.5</span>,
+    borderColor: <span class="str">'#E0E0E0'</span>,
+    borderRadius: <span class="nu">10</span>,
+    padding: <span class="nu">12</span>,
+    fontSize: <span class="nu">14</span>,
+    backgroundColor: <span class="str">'#FAFAFA'</span>,
+  },
+  inputError: { borderColor: <span class="str">'#E74C3C'</span> },
+  errorText: { fontSize: <span class="nu">11</span>, color: <span class="str">'#E74C3C'</span>, marginTop: <span class="nu">3</span> },
+});</div>
+<div id="c1-1" class="cfile"><span class="cm">// App.js</span>
+<span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> {
+  View, Text, TouchableOpacity,
+  StyleSheet, SafeAreaView, Alert
+} <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> FormInput <span class="kw">from</span> <span class="str">'./components/FormInput'</span>;
+<span class="kw">import</span> { validate } <span class="kw">from</span> <span class="str">'./utils/validation'</span>;
+<span class="kw">import</span> { globalStyles } <span class="kw">from</span> <span class="str">'./styles/globalStyles'</span>;
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [form, setForm] = <span class="fn">useState</span>({
+    name: <span class="str">''</span>, email: <span class="str">''</span>, password: <span class="str">''</span>, confirm: <span class="str">''</span>
+  });
+  <span class="kw">const</span> [errors, setErrors] = <span class="fn">useState</span>({});
+
+  <span class="kw">const</span> <span class="fn">handleChange</span> = (field, value) =>
+    <span class="fn">setForm</span>({ ...form, [field]: value });
+
+  <span class="kw">const</span> <span class="fn">handleSubmit</span> = () => {
+    <span class="kw">const</span> errs = <span class="fn">validate</span>(form);
+    <span class="fn">setErrors</span>(errs);
+    <span class="kw">if</span> (Object.<span class="fn">keys</span>(errs).length === <span class="nu">0</span>) {
+      <span class="fn">Alert.alert</span>(<span class="str">'✅ Успіх!'</span>, <span class="str">'Реєстрацію завершено'</span>);
+    }
+  };
+
+  <span class="kw">return</span> (
+    &lt;SafeAreaView style={styles.safe}&gt;
+      &lt;View style={styles.container}&gt;
+        &lt;Text style={styles.logo}&gt;👤&lt;/Text&gt;
+        &lt;Text style={[globalStyles.heading, styles.title]}&gt;
+          Реєстрація
+        &lt;/Text&gt;
+
+        <span class="cm">{/* Flexbox: column — поля йдуть одне під одним */}</span>
+        &lt;FormInput label=<span class="str">"Ім'я"</span>
+          value={form.name}
+          onChangeText={(v) => <span class="fn">handleChange</span>(<span class="str">'name'</span>, v)}
+          placeholder=<span class="str">"Введіть ваше ім'я"</span>
+          error={errors.name}
+        /&gt;
+        &lt;FormInput label=<span class="str">"Email"</span>
+          value={form.email}
+          onChangeText={(v) => <span class="fn">handleChange</span>(<span class="str">'email'</span>, v)}
+          placeholder=<span class="str">"example@mail.com"</span>
+          keyboardType=<span class="str">"email-address"</span>
+          error={errors.email}
+        /&gt;
+        &lt;FormInput label=<span class="str">"Пароль"</span>
+          value={form.password}
+          onChangeText={(v) => <span class="fn">handleChange</span>(<span class="str">'password'</span>, v)}
+          placeholder=<span class="str">"Мін. 6 символів"</span>
+          secureTextEntry
+          error={errors.password}
+        /&gt;
+        &lt;FormInput label=<span class="str">"Підтвердіть пароль"</span>
+          value={form.confirm}
+          onChangeText={(v) => <span class="fn">handleChange</span>(<span class="str">'confirm'</span>, v)}
+          placeholder=<span class="str">"Повторіть пароль"</span>
+          secureTextEntry
+          error={errors.confirm}
+        /&gt;
+
+        &lt;TouchableOpacity
+          style={globalStyles.primaryButton}
+          onPress={<span class="fn">handleSubmit</span>}
+        &gt;
+          &lt;Text style={globalStyles.primaryButtonText}&gt;
+            Зареєструватись
+          &lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  safe: { flex: <span class="nu">1</span>, backgroundColor: <span class="str">'#F0F0F8'</span> },
+  container: {
+    flex: <span class="nu">1</span>,
+    justifyContent: <span class="str">'center'</span>, <span class="cm">// вертикальне центрування</span>
+    padding: <span class="nu">24</span>,
+  },
+  logo: { fontSize: <span class="nu">48</span>, textAlign: <span class="str">'center'</span>, marginBottom: <span class="nu">4</span> },
+  title: { fontSize: <span class="nu">24</span>, textAlign: <span class="str">'center'</span>, marginBottom: <span class="nu">24</span> },
+});</div>
+<div id="c1-2" class="cfile"><span class="cm">// utils/validation.js</span>
+<span class="kw">export function</span> <span class="fn">validate</span>(form) {
+  <span class="kw">const</span> errors = {};
+
+  <span class="cm">// Валідація імені</span>
+  <span class="kw">if</span> (!form.name.<span class="fn">trim</span>()) {
+    errors.name = <span class="str">"Поле обов'язкове"</span>;
+  }
+
+  <span class="cm">// Валідація email через регулярний вираз</span>
+  <span class="kw">const</span> emailRegex = <span class="str">/^[^\s@]+@[^\s@]+\.[^\s@]+$/</span>;
+  <span class="kw">if</span> (!<span class="fn">emailRegex.test</span>(form.email)) {
+    errors.email = <span class="str">'Невірний формат email'</span>;
+  }
+
+  <span class="cm">// Валідація пароля</span>
+  <span class="kw">if</span> (form.password.length < <span class="nu">6</span>) {
+    errors.password = <span class="str">'Мінімум 6 символів'</span>;
+  }
+
+  <span class="cm">// Збіг паролів</span>
+  <span class="kw">if</span> (form.password !== form.confirm) {
+    errors.confirm = <span class="str">'Паролі не збігаються'</span>;
+  }
+
+  <span class="kw">return</span> errors;
+}</div></div>
+  </div>
+</div>
+
+<!-- ══════════ PANEL 3 ══════════ -->
+<div id="mp2" class="panel">
+  <div class="phone-wrap">
+    <div class="p-label">Превʼю</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="status-bar"><span>9:41</span><span>🔋</span></div>
+        <!-- HOME -->
+        <div id="sim_home" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div class="home-header">
+            <div class="home-title">Головний екран</div>
+            <div class="home-sub">Вітаємо, Олексій 👋</div>
+          </div>
+          <div style="flex:1;padding:10px;display:flex;flex-direction:column;gap:8px;overflow-y:auto">
+            <div class="home-card">
+              <div class="home-card-title">📊 Статистика</div>
+              <div class="home-card-text">Ваш прогрес за тиждень виглядає чудово!</div>
+            </div>
+            <div class="home-card">
+              <div class="home-card-title">🔔 Сповіщення</div>
+              <div class="home-card-text">3 нових повідомлення чекають на вас.</div>
+            </div>
+            <div class="home-card">
+              <div class="home-card-title">⚡ Швидкі дії</div>
+              <div class="home-card-text">Натисніть, щоб перейти до налаштувань.</div>
+            </div>
+          </div>
+        </div>
+        <!-- PROFILE -->
+        <div id="sim_profile" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+          <div class="home-header" style="text-align:center">
+            <div class="home-title">Профіль</div>
+          </div>
+          <div style="flex:1;padding:12px;display:flex;flex-direction:column;gap:8px">
+            <div class="profile-avatar">🧑‍💻</div>
+            <div class="profile-name">Олексій Петренко</div>
+            <div class="profile-email">oleksii@example.com</div>
+            <div class="profile-row">
+              <div class="profile-stat"><div class="profile-stat-num">128</div><div class="profile-stat-lbl">Публікацій</div></div>
+              <div class="profile-stat"><div class="profile-stat-num">4.9k</div><div class="profile-stat-lbl">Підписників</div></div>
+              <div class="profile-stat"><div class="profile-stat-num">312</div><div class="profile-stat-lbl">Підписок</div></div>
+            </div>
+            <button class="profile-btn">✏️ Редагувати профіль</button>
+          </div>
+        </div>
+        <!-- NAV -->
+        <div class="nav-bar">
+          <button class="nav-item active" id="nav_home" onclick="simNav('home')"><span class="nav-icon">🏠</span>Головна</button>
+          <button class="nav-item" id="nav_profile" onclick="simNav('profile')"><span class="nav-icon">👤</span>Профіль</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-tabs">
+      <button class="ct active" onclick="switchCode(2,0)">globalStyles.js</button>
+      <button class="ct" onclick="switchCode(2,1)">HomeScreen.js</button>
+      <button class="ct" onclick="switchCode(2,2)">ProfileScreen.js</button>
+      <button class="ct" onclick="switchCode(2,3)">App.js</button>
+    </div>
+    <div class="cblock">
+<div id="c2-0" class="cfile active"><span class="cm">// styles/globalStyles.js — єдине місце для загальних токенів</span>
+<span class="kw">import</span> { StyleSheet } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export const</span> COLORS = {
+  primary:    <span class="str">'#6C63FF'</span>,
+  secondary:  <span class="str">'#a78bfa'</span>,
+  background: <span class="str">'#F0F0F8'</span>,
+  surface:    <span class="str">'#FFFFFF'</span>,
+  textMain:   <span class="str">'#1A1A2E'</span>,
+  textMuted:  <span class="str">'#888888'</span>,
+};
+
+<span class="kw">export const</span> SPACING = {
+  xs: <span class="nu">4</span>, sm: <span class="nu">8</span>, md: <span class="nu">16</span>, lg: <span class="nu">24</span>, xl: <span class="nu">32</span>,
+};
+
+<span class="kw">export const</span> FONT_SIZE = {
+  xs: <span class="nu">10</span>, sm: <span class="nu">12</span>, md: <span class="nu">14</span>, lg: <span class="nu">18</span>, xl: <span class="nu">24</span>, xxl: <span class="nu">32</span>,
+};
+
+<span class="cm">// Глобальні стилі — застосовуються на обох екранах</span>
+<span class="kw">export const</span> globalStyles = <span class="fn">StyleSheet.create</span>({
+  screenContainer: {
+    flex: <span class="nu">1</span>,
+    backgroundColor: COLORS.background,
+  },
+  header: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: SPACING.lg,
+    paddingHorizontal: SPACING.md,
+  },
+  headerTitle: {
+    color: <span class="str">'#fff'</span>,
+    fontSize: FONT_SIZE.lg,
+    fontWeight: <span class="str">'700'</span>,
+  },
+  headerSubtitle: {
+    color: <span class="str">'rgba(255,255,255,0.75)'</span>,
+    fontSize: FONT_SIZE.sm,
+    marginTop: SPACING.xs,
+  },
+  card: {
+    backgroundColor: COLORS.surface,
+    borderRadius: <span class="nu">12</span>,
+    padding: SPACING.md,
+    marginBottom: SPACING.sm,
+    elevation: <span class="nu">2</span>,
+    shadowColor: <span class="str">'#000'</span>,
+    shadowOffset: { width: <span class="nu">0</span>, height: <span class="nu">1</span> },
+    shadowOpacity: <span class="nu">0.06</span>,
+    shadowRadius: <span class="nu">4</span>,
+  },
+  cardTitle: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: <span class="str">'700'</span>,
+    color: COLORS.textMain,
+    marginBottom: SPACING.xs,
+  },
+  cardBody: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textMuted,
+    lineHeight: <span class="nu">18</span>,
+  },
+  primaryBtn: {
+    backgroundColor: COLORS.primary,
+    borderRadius: <span class="nu">10</span>,
+    paddingVertical: SPACING.sm + <span class="nu">4</span>,
+    alignItems: <span class="str">'center'</span>,
+  },
+  primaryBtnText: {
+    color: <span class="str">'#fff'</span>, fontWeight: <span class="str">'700'</span>, fontSize: FONT_SIZE.md,
+  },
+});</div>
+<div id="c2-1" class="cfile"><span class="cm">// screens/HomeScreen.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, Text, ScrollView, StyleSheet }
+  <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { globalStyles, SPACING, FONT_SIZE }
+  <span class="kw">from</span> <span class="str">'../styles/globalStyles'</span>;
+
+<span class="kw">const</span> CARDS = [
+  { icon: <span class="str">'📊'</span>, title: <span class="str">'Статистика'</span>,
+    text: <span class="str">'Ваш прогрес за тиждень виглядає чудово!'</span> },
+  { icon: <span class="str">'🔔'</span>, title: <span class="str">'Сповіщення'</span>,
+    text: <span class="str">'3 нових повідомлення чекають на вас.'</span> },
+  { icon: <span class="str">'⚡'</span>, title: <span class="str">'Швидкі дії'</span>,
+    text: <span class="str">'Натисніть, щоб перейти до налаштувань.'</span> },
+];
+
+<span class="kw">export default function</span> <span class="fn">HomeScreen</span>({ username }) {
+  <span class="kw">return</span> (
+    &lt;View style={globalStyles.screenContainer}&gt;
+      <span class="cm">{/* Глобальний стиль хедера */}</span>
+      &lt;View style={globalStyles.header}&gt;
+        &lt;Text style={globalStyles.headerTitle}&gt;
+          Головний екран
+        &lt;/Text&gt;
+        &lt;Text style={globalStyles.headerSubtitle}&gt;
+          Вітаємо, {username} 👋
+        &lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;ScrollView contentContainerStyle={styles.content}&gt;
+        {CARDS.<span class="fn">map</span>((card, i) => (
+          &lt;View key={i} style={globalStyles.card}&gt;
+            <span class="cm">{/* Локальний стиль: рядок з іконкою */}</span>
+            &lt;View style={styles.cardHeader}&gt;
+              &lt;Text style={styles.cardIcon}&gt;{card.icon}&lt;/Text&gt;
+              &lt;Text style={globalStyles.cardTitle}&gt;{card.title}&lt;/Text&gt;
+            &lt;/View&gt;
+            &lt;Text style={globalStyles.cardBody}&gt;{card.text}&lt;/Text&gt;
+          &lt;/View&gt;
+        ))}
+      &lt;/ScrollView&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="cm">// Локальні стилі — тільки для HomeScreen</span>
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  content: { padding: SPACING.md },
+  cardHeader: {
+    flexDirection: <span class="str">'row'</span>,
+    alignItems: <span class="str">'center'</span>,
+    gap: SPACING.sm,
+    marginBottom: SPACING.xs,
+  },
+  cardIcon: { fontSize: FONT_SIZE.lg },
+});</div>
+<div id="c2-2" class="cfile"><span class="cm">// screens/ProfileScreen.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, Text, TouchableOpacity, StyleSheet }
+  <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { globalStyles, COLORS, SPACING, FONT_SIZE }
+  <span class="kw">from</span> <span class="str">'../styles/globalStyles'</span>;
+
+<span class="kw">export default function</span> <span class="fn">ProfileScreen</span>({ user }) {
+  <span class="kw">return</span> (
+    &lt;View style={globalStyles.screenContainer}&gt;
+      &lt;View style={globalStyles.header}&gt;
+        &lt;Text style={[globalStyles.headerTitle, styles.headerCenter]}&gt;
+          Профіль
+        &lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;View style={styles.body}&gt;
+        <span class="cm">{/* Локальний стиль: аватар — тільки на ProfileScreen */}</span>
+        &lt;View style={styles.avatar}&gt;
+          &lt;Text style={styles.avatarEmoji}&gt;🧑‍💻&lt;/Text&gt;
+        &lt;/View&gt;
+
+        &lt;Text style={styles.name}&gt;{user.name}&lt;/Text&gt;
+        &lt;Text style={styles.email}&gt;{user.email}&lt;/Text&gt;
+
+        <span class="cm">{/* Статистика */}</span>
+        &lt;View style={[globalStyles.card, styles.statsRow]}&gt;
+          {user.stats.<span class="fn">map</span>((s, i) => (
+            &lt;View key={i} style={styles.stat}&gt;
+              &lt;Text style={styles.statNum}&gt;{s.value}&lt;/Text&gt;
+              &lt;Text style={styles.statLabel}&gt;{s.label}&lt;/Text&gt;
+            &lt;/View&gt;
+          ))}
+        &lt;/View&gt;
+
+        &lt;TouchableOpacity style={globalStyles.primaryBtn}&gt;
+          &lt;Text style={globalStyles.primaryBtnText}&gt;
+            ✏️ Редагувати профіль
+          &lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="cm">// Локальні стилі — специфічні для ProfileScreen</span>
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  headerCenter: { textAlign: <span class="str">'center'</span> },
+  body: { padding: SPACING.md },
+  avatar: {
+    <span class="cm">// Круглий аватар — тільки на цьому екрані</span>
+    width: <span class="nu">80</span>, height: <span class="nu">80</span>, borderRadius: <span class="nu">40</span>,
+    backgroundColor: COLORS.primary,
+    alignSelf: <span class="str">'center'</span>,
+    justifyContent: <span class="str">'center'</span>,
+    alignItems: <span class="str">'center'</span>,
+    marginBottom: SPACING.sm,
+  },
+  avatarEmoji: { fontSize: <span class="nu">36</span> },
+  name: {
+    fontSize: FONT_SIZE.lg, fontWeight: <span class="str">'700'</span>,
+    color: COLORS.textMain, textAlign: <span class="str">'center'</span>,
+  },
+  email: {
+    fontSize: FONT_SIZE.sm, color: COLORS.textMuted,
+    textAlign: <span class="str">'center'</span>, marginBottom: SPACING.md,
+  },
+  statsRow: {
+    flexDirection: <span class="str">'row'</span>,
+    justifyContent: <span class="str">'space-around'</span>,
+    marginBottom: SPACING.md,
+  },
+  stat: { alignItems: <span class="str">'center'</span> },
+  statNum: { fontSize: FONT_SIZE.xl, fontWeight: <span class="str">'800'</span>, color: COLORS.primary },
+  statLabel: { fontSize: FONT_SIZE.xs, color: COLORS.textMuted },
+});</div>
+<div id="c2-3" class="cfile"><span class="cm">// App.js — навігація між екранами</span>
+<span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, TouchableOpacity, Text, StyleSheet }
+  <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> HomeScreen    <span class="kw">from</span> <span class="str">'./screens/HomeScreen'</span>;
+<span class="kw">import</span> ProfileScreen <span class="kw">from</span> <span class="str">'./screens/ProfileScreen'</span>;
+
+<span class="kw">const</span> USER = {
+  name:  <span class="str">'Олексій Петренко'</span>,
+  email: <span class="str">'oleksii@example.com'</span>,
+  stats: [
+    { value: <span class="str">'128'</span>,  label: <span class="str">'Публікацій'</span>  },
+    { value: <span class="str">'4.9k'</span>, label: <span class="str">'Підписників'</span> },
+    { value: <span class="str">'312'</span>,  label: <span class="str">'Підписок'</span>    },
+  ],
+};
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [screen, setScreen] = <span class="fn">useState</span>(<span class="str">'home'</span>);
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.root}&gt;
+      {screen === <span class="str">'home'</span>
+        ? &lt;HomeScreen username={USER.name.split(<span class="str">' '</span>)[<span class="nu">0</span>]} /&gt;
+        : &lt;ProfileScreen user={USER} /&gt;
+      }
+
+      <span class="cm">{/* Нижня навігація */}</span>
+      &lt;View style={styles.tabBar}&gt;
+        {[<span class="str">'home'</span>, <span class="str">'profile'</span>].<span class="fn">map</span>((s) => (
+          &lt;TouchableOpacity
+            key={s}
+            style={styles.tabItem}
+            onPress={() => <span class="fn">setScreen</span>(s)}
+          &gt;
+            &lt;Text style={styles.tabIcon}&gt;
+              {s === <span class="str">'home'</span> ? <span class="str">'🏠'</span> : <span class="str">'👤'</span>}
+            &lt;/Text&gt;
+            &lt;Text style={[
+              styles.tabLabel,
+              screen === s &amp;&amp; styles.tabActive
+            ]}&gt;
+              {s === <span class="str">'home'</span> ? <span class="str">'Головна'</span> : <span class="str">'Профіль'</span>}
+            &lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+        ))}
+      &lt;/View&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  root:     { flex: <span class="nu">1</span> },
+  tabBar:   { flexDirection: <span class="str">'row'</span>, backgroundColor: <span class="str">'#fff'</span>,
+              borderTopWidth: <span class="nu">0.5</span>, borderTopColor: <span class="str">'#eee'</span> },
+  tabItem:  { flex: <span class="nu">1</span>, alignItems: <span class="str">'center'</span>, paddingVertical: <span class="nu">8</span> },
+  tabIcon:  { fontSize: <span class="nu">20</span> },
+  tabLabel: { fontSize: <span class="nu">10</span>, color: <span class="str">'#aaa'</span>, marginTop: <span class="nu">2</span> },
+  tabActive:{ color: <span class="str">'#6C63FF'</span>, fontWeight: <span class="str">'700'</span> },
+});</div></div>
+  </div>
+</div>
+
+<script>
+function switchMain(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  ['mp0','mp1','mp2'].forEach((id,j)=>document.getElementById(id).classList.toggle('active',i===j));
+}
+const codeState={0:0,1:0,2:0};
+function switchCode(panel,file){
+  codeState[panel]=file;
+  const prefix='c'+panel+'-';
+  document.querySelectorAll('[id^="'+prefix+'"]').forEach(el=>el.classList.remove('active'));
+  document.getElementById(prefix+file).classList.add('active');
+  const tabs=document.querySelectorAll('#mp'+panel+' .ct');
+  tabs.forEach((t,j)=>t.classList.toggle('active',j===file));
+}
+// Form sim
+function simValidate(){
+  const n=document.getElementById('ri_name').value;
+  const e=document.getElementById('ri_email').value;
+  const p=document.getElementById('ri_pass').value;
+  const p2=document.getElementById('ri_pass2').value;
+  if(n.trim()) document.getElementById('re_name').style.display='none';
+  if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) document.getElementById('re_email').style.display='none';
+  if(p.length>=6) document.getElementById('re_pass').style.display='none';
+  if(p===p2&&p.length>0) document.getElementById('re_pass2').style.display='none';
+}
+function simSubmit(){
+  let ok=true;
+  const n=document.getElementById('ri_name').value;
+  const e=document.getElementById('ri_email').value;
+  const p=document.getElementById('ri_pass').value;
+  const p2=document.getElementById('ri_pass2').value;
+  if(!n.trim()){document.getElementById('re_name').style.display='block';ok=false;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){document.getElementById('re_email').style.display='block';ok=false;}
+  if(p.length<6){document.getElementById('re_pass').style.display='block';ok=false;}
+  if(p!==p2){document.getElementById('re_pass2').style.display='block';ok=false;}
+  const okEl=document.getElementById('sim_ok');
+  okEl.style.display=ok?'block':'none';
+}
+// Nav sim
+function simNav(s){
+  document.getElementById('sim_home').style.display=s==='home'?'flex':'none';
+  document.getElementById('sim_profile').style.display=s==='profile'?'flex':'none';
+  document.getElementById('nav_home').classList.toggle('active',s==='home');
+  document.getElementById('nav_profile').classList.toggle('active',s==='profile');
+}
+</script>
