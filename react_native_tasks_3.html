@@ -1,0 +1,601 @@
+
+<style>
+  .tabs{display:flex;border-bottom:.5px solid var(--color-border-tertiary)}
+  .tab{padding:10px 15px;font-size:12.5px;cursor:pointer;border:none;background:none;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-.5px;white-space:nowrap}
+  .tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary);font-weight:500}
+  .layout{display:flex;gap:24px;padding:20px 0}
+  .phone{flex:0 0 188px;background:var(--color-background-secondary);border-radius:24px;border:1.5px solid var(--color-border-secondary);padding:10px;min-height:400px;display:flex;flex-direction:column}
+  .screen{flex:1;background:#fff;border-radius:16px;padding:12px 10px;display:flex;flex-direction:column;gap:7px;overflow:hidden}
+  .code-side{flex:1;min-width:0}
+  .cb{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);border:.5px solid var(--color-border-tertiary);padding:13px;font-family:var(--font-mono);font-size:10.5px;line-height:1.65;color:var(--color-text-secondary);overflow:auto;white-space:pre;max-height:455px}
+  .kw{color:#7F77DD}.str{color:#1D9E75}.fn{color:#185FA5}.cmt{color:var(--color-text-tertiary);font-style:italic}.num{color:#D85A30}
+  .panel{display:none}.panel.active{display:flex;flex-direction:column}
+  .lbl{font-size:10px;color:#999;text-align:center;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+  .hint{font-size:9.5px;color:#bbb;text-align:center;margin-top:auto;padding-top:4px}
+  .stitle{font-size:12px;font-weight:600;color:#111;text-align:center}
+  .sinput{width:100%;border:.5px solid #ddd;border-radius:7px;padding:5px 8px;font-size:11px;box-sizing:border-box;outline:none}
+  .sinput.err{border-color:#E24B4A}
+  .serr{font-size:9.5px;color:#E24B4A;margin-top:-4px}
+  .sbtn{border:none;border-radius:7px;padding:7px 0;font-size:11px;cursor:pointer;font-weight:600;width:100%}
+  .sbtn-p{background:#7F77DD;color:#fff}
+  .sbtn-s{background:#eee;color:#444}
+  .sbtn-d{background:#FCEBEB;color:#A32D2D;font-size:10px;padding:4px 7px;width:auto;border-radius:5px}
+  .sbtn-e{background:#E6F1FB;color:#185FA5;font-size:10px;padding:4px 7px;width:auto;border-radius:5px}
+  .contact-row{display:flex;align-items:center;gap:6px;padding:5px 6px;border:.5px solid #f0f0f0;border-radius:8px}
+  .avatar{width:28px;height:28px;border-radius:50%;background:#7F77DD;color:#fff;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .cname{font-size:11px;font-weight:500;color:#111}
+  .cphone{font-size:9.5px;color:#888}
+  .cemail{font-size:9px;color:#aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px}
+  .cbtns{display:flex;gap:3px;margin-left:auto;flex-shrink:0}
+  .cat-row{display:flex;gap:4px;flex-wrap:wrap}
+  .cat-btn{border:none;border-radius:12px;padding:3px 9px;font-size:10px;cursor:pointer;font-weight:500}
+  .cat-btn.active{background:#7F77DD;color:#fff}
+  .cat-btn:not(.active){background:#f0f0f0;color:#555}
+  .gal-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+  .gal-item{border-radius:8px;overflow:hidden;height:58px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;position:relative}
+  .gal-label{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:8.5px;color:#fff;font-weight:600;text-shadow:0 1px 2px #0006}
+  .star-row{display:flex;gap:3px;justify-content:center}
+  .star{font-size:20px;cursor:pointer;transition:transform .1s}
+  .star:hover{transform:scale(1.2)}
+  .review-card{border:.5px solid #eee;border-radius:8px;padding:7px 8px;background:#fafafa}
+  .rev-stars{font-size:11px;color:#EF9F27}
+  .rev-text{font-size:10.5px;color:#444;margin-top:2px}
+  .rev-date{font-size:9px;color:#bbb;margin-top:2px}
+  .rev-btns{display:flex;gap:4px;margin-top:4px}
+  .avg-box{display:flex;align-items:center;gap:6px;padding:6px 8px;background:#FAEEDA;border-radius:8px}
+  .avg-num{font-size:20px;font-weight:700;color:#BA7517}
+  .avg-stars{font-size:13px;color:#EF9F27}
+  .avg-cnt{font-size:10px;color:#854F0B}
+</style>
+
+<h2 class="sr-only">Практичне завдання 3: контакти, галерея, рейтинг</h2>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab(0)">1. Контакти</button>
+  <button class="tab" onclick="switchTab(1)">2. Галерея</button>
+  <button class="tab" onclick="switchTab(2)">3. Рейтинг</button>
+</div>
+
+<!-- ══════════ TAB 1 ══════════ -->
+<div id="p0" class="panel active">
+  <div class="layout">
+    <div>
+      <div class="lbl">Превʼю</div>
+      <div class="phone"><div class="screen" id="contactScreen">
+        <div class="stitle">Контакти</div>
+        <div id="cList"></div>
+        <button class="sbtn sbtn-p" onclick="openForm()" id="addBtn">＋ Додати контакт</button>
+        <div id="cForm" style="display:none;display:flex;flex-direction:column;gap:5px">
+          <input class="sinput" id="fName" placeholder="Імʼя *" oninput="clearErr('fName')"/>
+          <div class="serr" id="errName"></div>
+          <input class="sinput" id="fPhone" placeholder="Телефон * (+380...)" oninput="clearErr('fPhone')"/>
+          <div class="serr" id="errPhone"></div>
+          <input class="sinput" id="fEmail" placeholder="Email *" oninput="clearErr('fEmail')"/>
+          <div class="serr" id="errEmail"></div>
+          <div style="display:flex;gap:5px">
+            <button class="sbtn sbtn-p" style="flex:1" onclick="saveContact()">Зберегти</button>
+            <button class="sbtn sbtn-s" style="flex:1" onclick="closeForm()">Скасувати</button>
+          </div>
+        </div>
+        <div class="hint">← Інтерактивне превʼю</div>
+      </div></div>
+    </div>
+    <div class="code-side"><div class="cb"><span class="cmt">// ContactForm.js</span>
+<span class="kw">export default function</span> <span class="fn">ContactForm</span>({ onSave, onCancel, initial }) {
+  <span class="kw">const</span> [name,  setName]  = <span class="fn">useState</span>(initial?.name  ?? <span class="str">''</span>);
+  <span class="kw">const</span> [phone, setPhone] = <span class="fn">useState</span>(initial?.phone ?? <span class="str">''</span>);
+  <span class="kw">const</span> [email, setEmail] = <span class="fn">useState</span>(initial?.email ?? <span class="str">''</span>);
+  <span class="kw">const</span> [errors, setErrors] = <span class="fn">useState</span>({});
+
+  <span class="kw">const</span> <span class="fn">validate</span> = () => {
+    <span class="kw">const</span> e = {};
+    <span class="kw">if</span> (!name.trim())
+      e.name = <span class="str">'Введіть імʼя'</span>;
+    <span class="kw">if</span> (!/^\+?\d{10,13}$/.test(phone))
+      e.phone = <span class="str">'Невірний формат телефону'</span>;
+    <span class="kw">if</span> (!/\S+@\S+\.\S+/.test(email))
+      e.email = <span class="str">'Невірний формат email'</span>;
+    <span class="fn">setErrors</span>(e);
+    <span class="kw">return</span> Object.<span class="fn">keys</span>(e).length === <span class="num">0</span>;
+  };
+
+  <span class="kw">const</span> <span class="fn">handleSave</span> = () => {
+    <span class="kw">if</span> (!<span class="fn">validate</span>()) <span class="kw">return</span>;
+    <span class="fn">onSave</span>({ name, phone, email });
+  };
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.form}&gt;
+      &lt;TextInput value={name} onChangeText={<span class="fn">setName</span>}
+        placeholder=<span class="str">"Імʼя *"</span>
+        style={[styles.input, errors.name &amp;&amp; styles.inputErr]} /&gt;
+      {errors.name &amp;&amp;
+        &lt;Text style={styles.err}&gt;{errors.name}&lt;/Text&gt;}
+
+      &lt;TextInput value={phone} onChangeText={<span class="fn">setPhone</span>}
+        placeholder=<span class="str">"Телефон * (+380...)"</span>
+        keyboardType=<span class="str">"phone-pad"</span>
+        style={[styles.input, errors.phone &amp;&amp; styles.inputErr]} /&gt;
+      {errors.phone &amp;&amp;
+        &lt;Text style={styles.err}&gt;{errors.phone}&lt;/Text&gt;}
+
+      &lt;TextInput value={email} onChangeText={<span class="fn">setEmail</span>}
+        placeholder=<span class="str">"Email *"</span>
+        keyboardType=<span class="str">"email-address"</span>
+        style={[styles.input, errors.email &amp;&amp; styles.inputErr]} /&gt;
+      {errors.email &amp;&amp;
+        &lt;Text style={styles.err}&gt;{errors.email}&lt;/Text&gt;}
+
+      &lt;View style={styles.row}&gt;
+        &lt;TouchableOpacity style={styles.btnPrimary}
+          onPress={<span class="fn">handleSave</span>}&gt;
+          &lt;Text style={styles.btnPrimaryText}&gt;Зберегти&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+        &lt;TouchableOpacity style={styles.btnSecondary}
+          onPress={<span class="fn">onCancel</span>}&gt;
+          &lt;Text&gt;Скасувати&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="cmt">// ContactItem.js</span>
+<span class="kw">export default function</span> <span class="fn">ContactItem</span>({ contact, onEdit, onDelete }) {
+  <span class="kw">return</span> (
+    &lt;View style={styles.row}&gt;
+      &lt;View style={styles.avatar}&gt;
+        &lt;Text style={styles.avatarText}&gt;
+          {contact.name[<span class="num">0</span>].<span class="fn">toUpperCase</span>()}
+        &lt;/Text&gt;
+      &lt;/View&gt;
+      &lt;View style={styles.info}&gt;
+        &lt;Text style={styles.name}&gt;{contact.name}&lt;/Text&gt;
+        &lt;Text style={styles.phone}&gt;{contact.phone}&lt;/Text&gt;
+        &lt;Text style={styles.email}&gt;{contact.email}&lt;/Text&gt;
+      &lt;/View&gt;
+      &lt;TouchableOpacity onPress={() =&gt; <span class="fn">onEdit</span>(contact)}&gt;
+        &lt;Text&gt;✏️&lt;/Text&gt;
+      &lt;/TouchableOpacity&gt;
+      &lt;TouchableOpacity onPress={() =&gt; <span class="fn">onDelete</span>(contact.id)}&gt;
+        &lt;Text&gt;🗑️&lt;/Text&gt;
+      &lt;/TouchableOpacity&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="cmt">// App.js</span>
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [contacts, setContacts] = <span class="fn">useState</span>([]);
+  <span class="kw">const</span> [editing, setEditing]   = <span class="fn">useState</span>(<span class="kw">null</span>);
+  <span class="kw">const</span> [showForm, setShowForm] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="kw">const</span> <span class="fn">handleSave</span> = (data) => {
+    <span class="kw">if</span> (editing) {
+      <span class="fn">setContacts</span>(contacts.<span class="fn">map</span>((c) =>
+        c.id === editing.id ? { ...c, ...data } : c
+      ));
+    } <span class="kw">else</span> {
+      <span class="fn">setContacts</span>([...contacts,
+        { ...data, id: <span class="fn">Date.now</span>() }]);
+    }
+    <span class="fn">setShowForm</span>(<span class="kw">false</span>);
+    <span class="fn">setEditing</span>(<span class="kw">null</span>);
+  };
+
+  <span class="kw">const</span> <span class="fn">handleDelete</span> = (id) =>
+    <span class="fn">setContacts</span>(contacts.<span class="fn">filter</span>((c) => c.id !== id));
+
+  <span class="kw">const</span> <span class="fn">handleEdit</span> = (contact) => {
+    <span class="fn">setEditing</span>(contact);
+    <span class="fn">setShowForm</span>(<span class="kw">true</span>);
+  };
+
+  <span class="kw">return</span> (
+    &lt;View&gt;
+      &lt;FlatList data={contacts}
+        keyExtractor={(c) => <span class="fn">String</span>(c.id)}
+        renderItem={({ item }) => (
+          &lt;ContactItem contact={item}
+            onEdit={<span class="fn">handleEdit</span>}
+            onDelete={<span class="fn">handleDelete</span>} /&gt;
+        )} /&gt;
+
+      {showForm
+        ? &lt;ContactForm
+            initial={editing}
+            onSave={<span class="fn">handleSave</span>}
+            onCancel={() => <span class="fn">setShowForm</span>(<span class="kw">false</span>)} /&gt;
+        : &lt;TouchableOpacity onPress={() => <span class="fn">setShowForm</span>(<span class="kw">true</span>)}&gt;
+            &lt;Text&gt;＋ Додати контакт&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;}
+    &lt;/View&gt;
+  );
+}</div></div>
+  </div>
+</div>
+
+<!-- ══════════ TAB 2 ══════════ -->
+<div id="p1" class="panel">
+  <div class="layout">
+    <div>
+      <div class="lbl">Превʼю</div>
+      <div class="phone"><div class="screen">
+        <div class="stitle">Галерея</div>
+        <div class="cat-row" id="catRow"></div>
+        <div class="gal-grid" id="galGrid"></div>
+        <div class="hint">← Натисни категорію</div>
+      </div></div>
+    </div>
+    <div class="code-side"><div class="cb"><span class="cmt">// GalleryItem.js — компонент одного фото</span>
+<span class="kw">export default function</span> <span class="fn">GalleryItem</span>({ item }) {
+  <span class="kw">return</span> (
+    &lt;TouchableOpacity style={styles.card}&gt;
+      &lt;Image source={{ uri: item.uri }}
+        style={styles.image} resizeMode=<span class="str">"cover"</span> /&gt;
+      &lt;Text style={styles.label}&gt;{item.title}&lt;/Text&gt;
+    &lt;/TouchableOpacity&gt;
+  );
+}
+
+<span class="cmt">// CategoryFilter.js — рядок категорій</span>
+<span class="kw">export default function</span> <span class="fn">CategoryFilter</span>({
+  categories, active, onSelect
+}) {
+  <span class="kw">return</span> (
+    &lt;ScrollView horizontal showsHorizontalScrollIndicator={<span class="kw">false</span>}&gt;
+      {[<span class="str">'Усі'</span>, ...categories].<span class="fn">map</span>((cat) => (
+        &lt;TouchableOpacity
+          key={cat}
+          style={[styles.btn,
+            active === cat &amp;&amp; styles.btnActive]}
+          onPress={() => <span class="fn">onSelect</span>(cat)}&gt;
+          &lt;Text style={[styles.text,
+            active === cat &amp;&amp; styles.textActive]}&gt;
+            {cat}
+          &lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      ))}
+    &lt;/ScrollView&gt;
+  );
+}
+
+<span class="cmt">// App.js</span>
+<span class="kw">const</span> IMAGES = [
+  { id: <span class="num">1</span>, title: <span class="str">'Гори'</span>,    category: <span class="str">'Природа'</span>,
+    uri: <span class="str">'https://picsum.photos/seed/mtn/200'</span> },
+  { id: <span class="num">2</span>, title: <span class="str">'Ліс'</span>,     category: <span class="str">'Природа'</span>,
+    uri: <span class="str">'https://picsum.photos/seed/forest/200'</span> },
+  { id: <span class="num">3</span>, title: <span class="str">'Київ'</span>,    category: <span class="str">'Міста'</span>,
+    uri: <span class="str">'https://picsum.photos/seed/city1/200'</span> },
+  { id: <span class="num">4</span>, title: <span class="str">'Лондон'</span>,  category: <span class="str">'Міста'</span>,
+    uri: <span class="str">'https://picsum.photos/seed/city2/200'</span> },
+  { id: <span class="num">5</span>, title: <span class="str">'Кіт'</span>,     category: <span class="str">'Тварини'</span>,
+    uri: <span class="str">'https://picsum.photos/seed/cat1/200'</span> },
+  { id: <span class="num">6</span>, title: <span class="str">'Лисиця'</span>, category: <span class="str">'Тварини'</span>,
+    uri: <span class="str">'https://picsum.photos/seed/fox1/200'</span> },
+];
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> categories = [
+    ...<span class="kw">new</span> <span class="fn">Set</span>(IMAGES.<span class="fn">map</span>((i) => i.category))
+  ];
+  <span class="kw">const</span> [active, setActive] = <span class="fn">useState</span>(<span class="str">'Усі'</span>);
+
+  <span class="kmt">// Фільтрація — проста логіка в одному рядку</span>
+  <span class="kw">const</span> filtered = active === <span class="str">'Усі'</span>
+    ? IMAGES
+    : IMAGES.<span class="fn">filter</span>((i) => i.category === active);
+
+  <span class="kw">return</span> (
+    &lt;View&gt;
+      <span class="cmt">{/* Категорії через пропси */}</span>
+      &lt;CategoryFilter
+        categories={categories}
+        active={active}
+        onSelect={<span class="fn">setActive</span>} /&gt;
+
+      <span class="cmt">{/* Сітка відфільтрованих елементів */}</span>
+      &lt;FlatList
+        data={filtered}
+        numColumns={<span class="num">2</span>}
+        keyExtractor={(i) => <span class="fn">String</span>(i.id)}
+        renderItem={({ item }) =>
+          &lt;GalleryItem item={item} /&gt;}
+      /&gt;
+    &lt;/View&gt;
+  );
+}</div></div>
+  </div>
+</div>
+
+<!-- ══════════ TAB 3 ══════════ -->
+<div id="p2" class="panel">
+  <div class="layout">
+    <div>
+      <div class="lbl">Превʼю</div>
+      <div class="phone"><div class="screen">
+        <div class="stitle">Навушники Pro X</div>
+        <div class="avg-box" id="avgBox">
+          <div class="avg-num" id="avgNum">—</div>
+          <div><div class="avg-stars" id="avgStars"></div><div class="avg-cnt" id="avgCnt">Немає відгуків</div></div>
+        </div>
+        <div style="font-size:10px;font-weight:600;color:#555;text-align:center">Ваша оцінка</div>
+        <div class="star-row" id="starRow"></div>
+        <textarea id="revText" class="sinput" placeholder="Напишіть відгук..." style="height:40px;resize:none;font-family:inherit"></textarea>
+        <button class="sbtn sbtn-p" onclick="submitReview()" id="revBtn">Додати відгук</button>
+        <div id="revList" style="display:flex;flex-direction:column;gap:5px;max-height:120px;overflow-y:auto"></div>
+        <div class="hint">← Інтерактивне превʼю</div>
+      </div></div>
+    </div>
+    <div class="code-side"><div class="cb"><span class="cmt">// StarPicker.js — вибір зірок</span>
+<span class="kw">export default function</span> <span class="fn">StarPicker</span>({ value, onChange }) {
+  <span class="kw">return</span> (
+    &lt;View style={styles.row}&gt;
+      {[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>].<span class="fn">map</span>((n) => (
+        &lt;TouchableOpacity key={n}
+          onPress={() => <span class="fn">onChange</span>(n)}&gt;
+          &lt;Text style={styles.star}&gt;
+            {n &lt;= value ? <span class="str">'★'</span> : <span class="str">'☆'</span>}
+          &lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      ))}
+    &lt;/View&gt;
+  );
+}
+
+<span class="cmt">// ReviewCard.js — один відгук</span>
+<span class="kw">export default function</span> <span class="fn">ReviewCard</span>({
+  review, onEdit, onDelete
+}) {
+  <span class="kw">const</span> [editing, setEditing] = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [text, setText]       = <span class="fn">useState</span>(review.text);
+  <span class="kw">const</span> [rating, setRating]   = <span class="fn">useState</span>(review.rating);
+
+  <span class="kw">if</span> (editing) {
+    <span class="kw">return</span> (
+      &lt;View style={styles.card}&gt;
+        &lt;StarPicker value={rating} onChange={<span class="fn">setRating</span>} /&gt;
+        &lt;TextInput value={text} onChangeText={<span class="fn">setText</span>}
+          style={styles.input} multiline /&gt;
+        &lt;TouchableOpacity onPress={() => {
+          <span class="fn">onEdit</span>({ ...review, text, rating });
+          <span class="fn">setEditing</span>(<span class="kw">false</span>);
+        }}&gt;
+          &lt;Text&gt;Зберегти&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    );
+  }
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.card}&gt;
+      &lt;Text style={styles.stars}&gt;
+        {'★'.<span class="fn">repeat</span>(review.rating)}
+        {'☆'.<span class="fn">repeat</span>(<span class="num">5</span> - review.rating)}
+      &lt;/Text&gt;
+      &lt;Text style={styles.text}&gt;{review.text}&lt;/Text&gt;
+      &lt;Text style={styles.date}&gt;{review.date}&lt;/Text&gt;
+      &lt;View style={styles.actions}&gt;
+        &lt;TouchableOpacity onPress={() => <span class="fn">setEditing</span>(<span class="kw">true</span>)}&gt;
+          &lt;Text&gt;✏️ Редагувати&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+        &lt;TouchableOpacity
+          onPress={() => <span class="fn">onDelete</span>(review.id)}&gt;
+          &lt;Text&gt;🗑️ Видалити&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="cmt">// App.js</span>
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [reviews, setReviews] = <span class="fn">useState</span>([]);
+  <span class="kw">const</span> [rating,  setRating]  = <span class="fn">useState</span>(<span class="num">0</span>);
+  <span class="kw">const</span> [text,    setText]    = <span class="fn">useState</span>(<span class="str">''</span>);
+
+  <span class="cmt">// Середній рейтинг</span>
+  <span class="kw">const</span> avg = reviews.length
+    ? (reviews.<span class="fn">reduce</span>((s, r) => s + r.rating, <span class="num">0</span>)
+       / reviews.length).<span class="fn">toFixed</span>(<span class="num">1</span>)
+    : <span class="kw">null</span>;
+
+  <span class="kw">const</span> <span class="fn">addReview</span> = () => {
+    <span class="kw">if</span> (!rating || !text.trim()) <span class="kw">return</span>;
+    <span class="fn">setReviews</span>([{
+      id: <span class="fn">Date.now</span>(), rating, text,
+      date: <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">toLocaleDateString</span>(<span class="str">'uk-UA'</span>),
+    }, ...reviews]);
+    <span class="fn">setRating</span>(<span class="num">0</span>); <span class="fn">setText</span>(<span class="str">''</span>);
+  };
+
+  <span class="kw">const</span> <span class="fn">editReview</span> = (updated) =>
+    <span class="fn">setReviews</span>(reviews.<span class="fn">map</span>((r) =>
+      r.id === updated.id ? updated : r));
+
+  <span class="kw">const</span> <span class="fn">deleteReview</span> = (id) =>
+    <span class="fn">setReviews</span>(reviews.<span class="fn">filter</span>((r) => r.id !== id));
+
+  <span class="kw">return</span> (
+    &lt;ScrollView&gt;
+      &lt;Text&gt;Середній рейтинг: {avg ?? <span class="str">'—'</span>}&lt;/Text&gt;
+      &lt;StarPicker value={rating} onChange={<span class="fn">setRating</span>} /&gt;
+      &lt;TextInput value={text} onChangeText={<span class="fn">setText</span>}
+        placeholder=<span class="str">"Ваш відгук..."</span> multiline /&gt;
+      &lt;Button title=<span class="str">"Додати відгук"</span> onPress={<span class="fn">addReview</span>} /&gt;
+      {reviews.<span class="fn">map</span>((r) => (
+        &lt;ReviewCard key={r.id} review={r}
+          onEdit={<span class="fn">editReview</span>}
+          onDelete={<span class="fn">deleteReview</span>} /&gt;
+      ))}
+    &lt;/ScrollView&gt;
+  );
+}</div></div>
+  </div>
+</div>
+
+<script>
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));
+}
+
+/* ── CONTACTS ── */
+let contacts=[], editingId=null;
+function renderContacts(){
+  const el=document.getElementById('cList');
+  if(!contacts.length){el.innerHTML='<div style="font-size:10px;color:#bbb;text-align:center;padding:4px">Список порожній</div>';return;}
+  el.innerHTML=contacts.map(c=>`
+    <div class="contact-row">
+      <div class="avatar">${c.name[0].toUpperCase()}</div>
+      <div style="flex:1;min-width:0">
+        <div class="cname">${c.name}</div>
+        <div class="cphone">${c.phone}</div>
+        <div class="cemail">${c.email}</div>
+      </div>
+      <div class="cbtns">
+        <button class="sbtn sbtn-e" onclick="editContact(${c.id})">✏️</button>
+        <button class="sbtn sbtn-d" onclick="deleteContact(${c.id})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+function openForm(){
+  document.getElementById('cForm').style.display='flex';
+  document.getElementById('addBtn').style.display='none';
+  document.getElementById('fName').value='';
+  document.getElementById('fPhone').value='';
+  document.getElementById('fEmail').value='';
+  editingId=null;
+}
+function closeForm(){
+  document.getElementById('cForm').style.display='none';
+  document.getElementById('addBtn').style.display='block';
+  editingId=null;
+}
+function clearErr(f){
+  document.getElementById(f).classList.remove('err');
+  const map={'fName':'errName','fPhone':'errPhone','fEmail':'errEmail'};
+  document.getElementById(map[f]).textContent='';
+}
+function validate(){
+  let ok=true;
+  const n=document.getElementById('fName').value.trim();
+  const p=document.getElementById('fPhone').value.trim();
+  const e=document.getElementById('fEmail').value.trim();
+  if(!n){document.getElementById('fName').classList.add('err');document.getElementById('errName').textContent="Введіть імʼя";ok=false;}
+  if(!/^\+?\d{10,13}$/.test(p)){document.getElementById('fPhone').classList.add('err');document.getElementById('errPhone').textContent="Формат: +380XXXXXXXXX";ok=false;}
+  if(!/\S+@\S+\.\S+/.test(e)){document.getElementById('fEmail').classList.add('err');document.getElementById('errEmail').textContent="Невірний email";ok=false;}
+  return ok;
+}
+function saveContact(){
+  if(!validate())return;
+  const data={name:document.getElementById('fName').value.trim(),phone:document.getElementById('fPhone').value.trim(),email:document.getElementById('fEmail').value.trim()};
+  if(editingId){contacts=contacts.map(c=>c.id===editingId?{...c,...data}:c);}
+  else{contacts.push({...data,id:Date.now()});}
+  renderContacts();closeForm();
+}
+function editContact(id){
+  const c=contacts.find(x=>x.id===id);
+  editingId=id;
+  document.getElementById('fName').value=c.name;
+  document.getElementById('fPhone').value=c.phone;
+  document.getElementById('fEmail').value=c.email;
+  document.getElementById('cForm').style.display='flex';
+  document.getElementById('addBtn').style.display='none';
+}
+function deleteContact(id){contacts=contacts.filter(c=>c.id!==id);renderContacts();}
+renderContacts();
+
+/* ── GALLERY ── */
+const IMGS=[
+  {id:1,title:'Гори',cat:'Природа',bg:'#9FE1CB',em:'🏔️'},
+  {id:2,title:'Ліс',cat:'Природа',bg:'#C0DD97',em:'🌲'},
+  {id:3,title:'Київ',cat:'Міста',bg:'#B5D4F4',em:'🏙️'},
+  {id:4,title:'Лондон',cat:'Міста',bg:'#CEC3F6',em:'🌉'},
+  {id:5,title:'Кіт',cat:'Тварини',bg:'#FAC775',em:'🐱'},
+  {id:6,title:'Лисиця',cat:'Тварини',bg:'#F5C4B3',em:'🦊'},
+];
+const CATS=['Усі','Природа','Міста','Тварини'];
+let activeCat='Усі';
+function renderGallery(){
+  const catRow=document.getElementById('catRow');
+  catRow.innerHTML=CATS.map(c=>`<button class="cat-btn${c===activeCat?' active':''}" onclick="setCategory('${c}')">${c}</button>`).join('');
+  const filtered=activeCat==='Усі'?IMGS:IMGS.filter(i=>i.cat===activeCat);
+  document.getElementById('galGrid').innerHTML=filtered.map(i=>`
+    <div class="gal-item" style="background:${i.bg}">
+      <span style="font-size:26px">${i.em}</span>
+      <div class="gal-label">${i.title}</div>
+    </div>`).join('');
+}
+function setCategory(c){activeCat=c;renderGallery();}
+renderGallery();
+
+/* ── REVIEWS ── */
+let reviews=[], selRating=0, editRevId=null;
+function renderStarRow(){
+  document.getElementById('starRow').innerHTML=[1,2,3,4,5].map(n=>`
+    <span class="star" onclick="setStar(${n})" style="color:${n<=selRating?'#EF9F27':'#ccc'}">${n<=selRating?'★':'☆'}</span>`).join('');
+}
+function setStar(n){selRating=n;renderStarRow();}
+function renderAvg(){
+  if(!reviews.length){
+    document.getElementById('avgNum').textContent='—';
+    document.getElementById('avgStars').textContent='';
+    document.getElementById('avgCnt').textContent='Немає відгуків';
+    return;
+  }
+  const a=(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1);
+  document.getElementById('avgNum').textContent=a;
+  document.getElementById('avgStars').textContent='★'.repeat(Math.round(a))+'☆'.repeat(5-Math.round(a));
+  document.getElementById('avgCnt').textContent=reviews.length+' відгук(ів)';
+}
+function renderReviews(){
+  renderAvg();
+  const el=document.getElementById('revList');
+  if(!reviews.length){el.innerHTML='<div style="font-size:10px;color:#bbb;text-align:center">Ще немає відгуків</div>';return;}
+  el.innerHTML=reviews.map(r=>{
+    if(r.editing) return `
+      <div class="review-card">
+        <div style="display:flex;gap:2px;margin-bottom:4px">${[1,2,3,4,5].map(n=>`<span style="cursor:pointer;color:${n<=r.editRating?'#EF9F27':'#ccc'};font-size:14px" onclick="setEditStar(${r.id},${n})">${n<=r.editRating?'★':'☆'}</span>`).join('')}</div>
+        <textarea id="et${r.id}" class="sinput" style="height:32px;resize:none;font-family:inherit">${r.editText}</textarea>
+        <div style="display:flex;gap:4px;margin-top:3px">
+          <button class="sbtn sbtn-p" style="flex:1;padding:4px" onclick="saveEdit(${r.id})">Зберегти</button>
+          <button class="sbtn sbtn-s" style="flex:1;padding:4px" onclick="cancelEdit(${r.id})">Скасувати</button>
+        </div>
+      </div>`;
+    return `
+      <div class="review-card">
+        <div class="rev-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        <div class="rev-text">${r.text}</div>
+        <div class="rev-date">${r.date}</div>
+        <div class="rev-btns">
+          <button class="sbtn sbtn-e" onclick="startEdit(${r.id})">✏️ Редагувати</button>
+          <button class="sbtn sbtn-d" onclick="deleteRev(${r.id})">🗑️</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+function submitReview(){
+  const t=document.getElementById('revText').value.trim();
+  if(!selRating||!t)return;
+  reviews.unshift({id:Date.now(),rating:selRating,text:t,date:new Date().toLocaleDateString('uk-UA')});
+  selRating=0;document.getElementById('revText').value='';
+  renderStarRow();renderReviews();
+}
+function startEdit(id){
+  reviews=reviews.map(r=>r.id===id?{...r,editing:true,editText:r.text,editRating:r.rating}:r);renderReviews();
+}
+function setEditStar(id,n){
+  reviews=reviews.map(r=>r.id===id?{...r,editRating:n}:r);renderReviews();
+}
+function saveEdit(id){
+  const t=document.getElementById('et'+id)?.value.trim();
+  reviews=reviews.map(r=>r.id===id?{...r,text:t||r.text,rating:r.editRating,editing:false}:r);renderReviews();
+}
+function cancelEdit(id){
+  reviews=reviews.map(r=>r.id===id?{...r,editing:false}:r);renderReviews();
+}
+function deleteRev(id){reviews=reviews.filter(r=>r.id!==id);renderReviews();}
+renderStarRow();renderReviews();
+</script>
