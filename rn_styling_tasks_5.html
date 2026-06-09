@@ -1,0 +1,894 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.tabs{display:flex;border-bottom:1px solid var(--color-border-tertiary)}
+.tab{padding:10px 15px;font-size:12.5px;cursor:pointer;border:none;background:none;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab.active{color:var(--color-text-primary);border-bottom-color:#6C63FF;font-weight:600}
+.panel{display:none;flex-direction:row;gap:22px;padding:18px 0}
+.panel.active{display:flex}
+.phone-wrap{flex:0 0 188px}
+.plabel{font-size:10px;color:#aaa;text-align:center;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.phone{background:#1a1a2e;border-radius:28px;padding:9px;border:2px solid #2d2d4e}
+.notch{width:55px;height:7px;background:#2d2d4e;border-radius:4px;margin:0 auto 7px}
+.screen{border-radius:18px;overflow:hidden;min-height:355px;display:flex;flex-direction:column;transition:background .3s}
+.sbar{padding:3px 10px;font-size:9px;display:flex;justify-content:space-between;border-bottom:0.5px solid rgba(0,0,0,.08)}
+.scontent{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+/* code */
+.cwrap{flex:1;min-width:0}
+.ctabs{display:flex;gap:0;margin-bottom:7px;border-bottom:0.5px solid var(--color-border-tertiary);flex-wrap:wrap}
+.ct{padding:5px 12px;font-size:10.5px;cursor:pointer;border:none;background:none;color:var(--color-text-tertiary);border-bottom:2px solid transparent;margin-bottom:-0.5px;white-space:nowrap}
+.ct.active{color:var(--color-text-primary);border-bottom-color:#6C63FF;font-weight:500}
+.cb{background:var(--color-background-secondary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:13px;font-family:var(--font-mono);font-size:10.2px;line-height:1.68;overflow:auto;max-height:430px;white-space:pre}
+.cf{display:none}.cf.active{display:block}
+.kw{color:#9B8FFF}.st{color:#1D9E75}.fn{color:#2176AE}.cm{color:#888;font-style:italic}.nu{color:#D85A30}
+
+/* ── TASK 1 sim ── */
+.news-header{background:linear-gradient(135deg,#6C63FF,#a78bfa);padding:10px 12px}
+.news-htitle{color:#fff;font-size:13px;font-weight:700}
+.news-hsub{color:rgba(255,255,255,.7);font-size:9px;margin-top:1px}
+.news-cats{display:flex;gap:6px;padding:8px 10px;overflow-x:auto;background:#fff;border-bottom:0.5px solid #eee}
+.news-cat{border:none;border-radius:12px;padding:3px 10px;font-size:10px;cursor:pointer;font-weight:500;white-space:nowrap}
+.news-list{padding:8px;display:flex;flex-direction:column;gap:8px;background:#f0f0f8;flex:1}
+.news-card{background:#fff;border-radius:12px;padding:10px;box-shadow:0 2px 6px rgba(0,0,0,.07)}
+.news-badge{display:inline-block;background:#eef;color:#6C63FF;font-size:9px;border-radius:6px;padding:1px 7px;font-weight:600;margin-bottom:4px}
+.news-title{font-size:11px;font-weight:700;color:#1a1a2e;line-height:1.4;margin-bottom:3px}
+.news-desc{font-size:10px;color:#888;line-height:1.4;margin-bottom:6px}
+.news-footer{display:flex;justify-content:space-between;align-items:center}
+.news-time{font-size:9px;color:#bbb}
+.news-btn{background:#6C63FF;color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:9px;font-weight:600;cursor:pointer}
+
+/* ── TASK 2 sim ── */
+.todo-header{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid rgba(0,0,0,.08)}
+.todo-htitle{font-size:13px;font-weight:700}
+.theme-toggle{border:none;border-radius:20px;padding:3px 10px;font-size:10px;cursor:pointer;font-weight:600}
+.todo-add{padding:8px 10px;display:flex;gap:6px}
+.todo-input{flex:1;border-radius:8px;border:1px solid #ddd;padding:5px 9px;font-size:11px;outline:none}
+.todo-addbtn{border:none;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:700;background:#6C63FF;color:#fff}
+.todo-list{flex:1;padding:0 10px 8px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.todo-item{border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px;border:0.5px solid rgba(0,0,0,.06)}
+.todo-check{width:16px;height:16px;border-radius:4px;border:1.5px solid #ccc;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px}
+.todo-text{flex:1;font-size:11px;line-height:1.4}
+.todo-del{border:none;background:none;font-size:13px;cursor:pointer;padding:0 2px;color:#e74c3c}
+.todo-stats{padding:6px 10px;display:flex;gap:8px;border-top:0.5px solid rgba(0,0,0,.06)}
+.todo-stat{font-size:9px;color:#aaa}
+
+/* ── TASK 3 sim ── */
+.prof-header{background:linear-gradient(160deg,#6C63FF 0%,#a78bfa 100%);padding:14px 12px 20px;position:relative}
+.prof-avatar{width:52px;height:52px;border-radius:26px;background:rgba(255,255,255,.25);margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid rgba(255,255,255,.5)}
+.prof-name{color:#fff;font-size:13px;font-weight:700;text-align:center}
+.prof-bio{color:rgba(255,255,255,.75);font-size:9px;text-align:center;margin-top:2px}
+.prof-stats{display:flex;background:#fff;margin:0 10px;margin-top:-12px;border-radius:10px;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);gap:0}
+.prof-stat{flex:1;text-align:center;border-right:0.5px solid #eee}
+.prof-stat:last-child{border-right:none}
+.prof-stat-n{font-size:14px;font-weight:800;color:#6C63FF}
+.prof-stat-l{font-size:8px;color:#aaa}
+.prof-tabs{display:flex;padding:6px 10px 0;gap:4px;background:#f0f0f8}
+.prof-tab{flex:1;border:none;border-radius:8px 8px 0 0;padding:5px;font-size:9px;font-weight:600;cursor:pointer;background:#e4e4f0;color:#888}
+.prof-tab.active{background:#6C63FF;color:#fff}
+.prof-section{padding:8px 10px;background:#f0f0f8;flex:1;overflow-y:auto}
+.friend-grid{display:flex;flex-wrap:wrap;gap:6px}
+.friend-item{background:#fff;border-radius:10px;padding:6px 8px;display:flex;align-items:center;gap:6px;width:calc(50% - 3px)}
+.friend-av{width:28px;height:28px;border-radius:14px;background:linear-gradient(135deg,#6C63FF,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.friend-name{font-size:10px;font-weight:600;color:#1a1a2e}
+.friend-status{font-size:8px;color:#aaa}
+.act-item{background:#fff;border-radius:10px;padding:8px 10px;margin-bottom:6px;display:flex;gap:8px;align-items:flex-start}
+.act-icon{font-size:18px;flex-shrink:0}
+.act-title{font-size:11px;font-weight:600;color:#1a1a2e}
+.act-time{font-size:9px;color:#aaa;margin-top:1px}
+.set-item{background:#fff;border-radius:10px;padding:9px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.set-left{display:flex;align-items:center;gap:8px}
+.set-icon{font-size:16px}
+.set-label{font-size:11px;font-weight:600;color:#1a1a2e}
+.set-arrow{color:#bbb;font-size:12px}
+</style>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchMain(0)">1. Новини (Flexbox)</button>
+  <button class="tab" onclick="switchMain(1)">2. Задачі (Теми)</button>
+  <button class="tab" onclick="switchMain(2)">3. Профіль (Адаптив)</button>
+</div>
+
+<!-- ══ PANEL 1 ══ -->
+<div id="mp0" class="panel active">
+  <div class="phone-wrap">
+    <div class="plabel">Превʼю</div>
+    <div class="phone"><div class="notch"></div>
+      <div class="screen" style="background:#f0f0f8">
+        <div class="sbar" style="background:#fff;color:#999"><span>9:41</span><span>🔋</span></div>
+        <div class="news-header"><div class="news-htitle">📰 Новини</div><div class="news-hsub">Залишайтесь в курсі подій</div></div>
+        <div class="news-cats" id="ncats">
+          <button class="news-cat active" style="background:#6C63FF;color:#fff" onclick="filterNews('all',this)">Всі</button>
+          <button class="news-cat" style="background:#f0f0f8;color:#555" onclick="filterNews('tech',this)">Технології</button>
+          <button class="news-cat" style="background:#f0f0f8;color:#555" onclick="filterNews('sport',this)">Спорт</button>
+          <button class="news-cat" style="background:#f0f0f8;color:#555" onclick="filterNews('science',this)">Наука</button>
+        </div>
+        <div class="news-list" id="newslist"></div>
+      </div>
+    </div>
+  </div>
+  <div class="cwrap">
+    <div class="ctabs">
+      <button class="ct active" onclick="switchCode(0,0)">ArticleCard.js</button>
+      <button class="ct" onclick="switchCode(0,1)">App.js</button>
+      <button class="ct" onclick="switchCode(0,2)">globalStyles.js</button>
+    </div>
+    <div class="cb">
+<div id="c0-0" class="cf active"><span class="cm">// components/ArticleCard.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TouchableOpacity,
+         StyleSheet, useWindowDimensions } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> { globalStyles, COLORS } <span class="kw">from</span> <span class="st">'../styles/globalStyles'</span>;
+
+<span class="kw">export default function</span> <span class="fn">ArticleCard</span>({ article, onPress }) {
+  <span class="cm">// Адаптивна ширина: 50% на планшеті, 100% на телефоні</span>
+  <span class="kw">const</span> { width } = <span class="fn">useWindowDimensions</span>();
+  <span class="kw">const</span> isTablet = width >= <span class="nu">768</span>;
+
+  <span class="kw">return</span> (
+    &lt;TouchableOpacity
+      style={[
+        globalStyles.card,           <span class="cm">// глобальна тінь і фон</span>
+        styles.card,                 <span class="cm">// локальні відступи</span>
+        isTablet &amp;&amp; styles.cardTablet <span class="cm">// 50% на планшеті</span>
+      ]}
+      onPress={() =&gt; <span class="fn">onPress</span>(article)}
+    &gt;
+      &lt;View style={styles.badge}&gt;
+        &lt;Text style={styles.badgeText}&gt;{article.category}&lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;Text style={[globalStyles.heading, styles.title]}&gt;
+        {article.title}
+      &lt;/Text&gt;
+      &lt;Text style={globalStyles.bodyText} numberOfLines={<span class="nu">2</span>}&gt;
+        {article.description}
+      &lt;/Text&gt;
+
+      &lt;View style={styles.footer}&gt;
+        &lt;Text style={styles.time}&gt;⏱ {article.time}&lt;/Text&gt;
+        &lt;TouchableOpacity style={styles.btn} onPress={() =&gt; <span class="fn">onPress</span>(article)}&gt;
+          &lt;Text style={styles.btnText}&gt;Читати більше&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    &lt;/TouchableOpacity&gt;
+  );
+}
+
+<span class="cm">// Локальні стилі — специфічні лише для цієї картки</span>
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  card:       { marginBottom: <span class="nu">12</span> },
+  cardTablet: { width: <span class="st">'48%'</span>, margin: <span class="st">'1%'</span> }, <span class="cm">// 2 колонки</span>
+  badge: {
+    alignSelf: <span class="st">'flex-start'</span>,
+    backgroundColor: <span class="st">'#EEF'</span>,
+    borderRadius: <span class="nu">6</span>,
+    paddingHorizontal: <span class="nu">8</span>,
+    paddingVertical: <span class="nu">2</span>,
+    marginBottom: <span class="nu">6</span>,
+  },
+  badgeText: { color: COLORS.primary, fontSize: <span class="nu">10</span>, fontWeight: <span class="st">'700'</span> },
+  title:     { fontSize: <span class="nu">14</span>, marginBottom: <span class="nu">4</span> },
+  footer:    { flexDirection: <span class="st">'row'</span>, justifyContent: <span class="st">'space-between'</span>,
+               alignItems: <span class="st">'center'</span>, marginTop: <span class="nu">8</span> },
+  time:      { fontSize: <span class="nu">10</span>, color: <span class="st">'#bbb'</span> },
+  btn: {
+    backgroundColor: COLORS.primary,
+    borderRadius: <span class="nu">8</span>,
+    paddingHorizontal: <span class="nu">12</span>,
+    paddingVertical: <span class="nu">5</span>,
+  },
+  btnText: { color: <span class="st">'#fff'</span>, fontSize: <span class="nu">11</span>, fontWeight: <span class="st">'700'</span> },
+});</div>
+<div id="c0-1" class="cf"><span class="cm">// App.js</span>
+<span class="kw">import</span> React, { useState, useMemo } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, FlatList,
+         ScrollView, StyleSheet,
+         SafeAreaView, useWindowDimensions } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> ArticleCard <span class="kw">from</span> <span class="st">'./components/ArticleCard'</span>;
+<span class="kw">import</span> { globalStyles } <span class="kw">from</span> <span class="st">'./styles/globalStyles'</span>;
+
+<span class="kw">const</span> ARTICLES = [
+  { id: <span class="st">'1'</span>, category: <span class="st">'Технології'</span>,
+    title: <span class="st">'React Native 0.76: нові можливості'</span>,
+    description: <span class="st">'Новий архітектурний движок підвищує продуктивність на 40%.'</span>,
+    time: <span class="st">'2 год тому'</span> },
+  { id: <span class="st">'2'</span>, category: <span class="st">'Спорт'</span>,
+    title: <span class="st">'Шахтар перемагає у Лізі Чемпіонів'</span>,
+    description: <span class="st">'Яскрава перемога з рахунком 3:1 виводить команду у фінал.'</span>,
+    time: <span class="st">'5 год тому'</span> },
+  { id: <span class="st">'3'</span>, category: <span class="st">'Наука'</span>,
+    title: <span class="st">'Відкрито нову екзопланету'</span>,
+    description: <span class="st">'Телескоп James Webb зафіксував планету у зоні життя зірки.'</span>,
+    time: <span class="st">'1 день тому'</span> },
+];
+
+<span class="kw">const</span> CATS = [<span class="st">'Всі'</span>, <span class="st">'Технології'</span>, <span class="st">'Спорт'</span>, <span class="st">'Наука'</span>];
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [activecat, setActiveCat] = <span class="fn">useState</span>(<span class="st">'Всі'</span>);
+  <span class="kw">const</span> { width } = <span class="fn">useWindowDimensions</span>();
+  <span class="kw">const</span> isTablet = width >= <span class="nu">768</span>;
+
+  <span class="kw">const</span> filtered = <span class="fn">useMemo</span>(() =>
+    activecat === <span class="st">'Всі'</span>
+      ? ARTICLES
+      : ARTICLES.<span class="fn">filter</span>(a => a.category === activecat),
+    [activecat]
+  );
+
+  <span class="kw">return</span> (
+    &lt;SafeAreaView style={globalStyles.screenContainer}&gt;
+      &lt;View style={styles.header}&gt;
+        &lt;Text style={styles.title}&gt;📰 Новини&lt;/Text&gt;
+      &lt;/View&gt;
+
+      <span class="cm">{/* Горизонтальний скрол категорій */}</span>
+      &lt;ScrollView horizontal showsHorizontalScrollIndicator={<span class="kw">false</span>}
+                  style={styles.catRow}&gt;
+        {CATS.<span class="fn">map</span>(cat => (
+          &lt;TouchableOpacity key={cat}
+            style={[styles.catBtn, activecat === cat &amp;&amp; styles.catActive]}
+            onPress={() =&gt; <span class="fn">setActiveCat</span>(cat)}&gt;
+            &lt;Text style={[styles.catText,
+              activecat === cat &amp;&amp; styles.catTextActive]}&gt;{cat}&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+        ))}
+      &lt;/ScrollView&gt;
+
+      <span class="cm">{/* Адаптивний список: 1 колонка / 2 колонки */}</span>
+      &lt;FlatList
+        data={filtered}
+        keyExtractor={i =&gt; i.id}
+        numColumns={isTablet ? <span class="nu">2</span> : <span class="nu">1</span>}
+        key={isTablet ? <span class="st">'tablet'</span> : <span class="st">'phone'</span>}
+        contentContainerStyle={styles.list}
+        renderItem={({ item }) =&gt; (
+          &lt;ArticleCard article={item} onPress={<span class="fn">console.log</span>} /&gt;
+        )}
+      /&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}</div>
+<div id="c0-2" class="cf"><span class="cm">// styles/globalStyles.js</span>
+<span class="kw">import</span> { StyleSheet } <span class="kw">from</span> <span class="st">'react-native'</span>;
+
+<span class="kw">export const</span> COLORS = {
+  primary:    <span class="st">'#6C63FF'</span>,
+  background: <span class="st">'#F0F0F8'</span>,
+  surface:    <span class="st">'#FFFFFF'</span>,
+  textMain:   <span class="st">'#1A1A2E'</span>,
+  textMuted:  <span class="st">'#888888'</span>,
+};
+<span class="kw">export const</span> SPACING = { xs:<span class="nu">4</span>, sm:<span class="nu">8</span>, md:<span class="nu">16</span>, lg:<span class="nu">24</span> };
+
+<span class="kw">export const</span> globalStyles = <span class="fn">StyleSheet.create</span>({
+  screenContainer: {
+    flex: <span class="nu">1</span>, backgroundColor: COLORS.background,
+  },
+  card: {
+    backgroundColor: COLORS.surface,
+    borderRadius: <span class="nu">14</span>,
+    padding: SPACING.md,
+    shadowColor: <span class="st">'#000'</span>,
+    shadowOffset: { width: <span class="nu">0</span>, height: <span class="nu">2</span> },
+    shadowOpacity: <span class="nu">0.07</span>,
+    shadowRadius: <span class="nu">8</span>,
+    elevation: <span class="nu">3</span>,
+  },
+  heading: {
+    fontWeight: <span class="st">'700'</span>,
+    color: COLORS.textMain,
+  },
+  bodyText: {
+    fontSize: <span class="nu">12</span>,
+    color: COLORS.textMuted,
+    lineHeight: <span class="nu">18</span>,
+  },
+});</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANEL 2 ══ -->
+<div id="mp1" class="panel">
+  <div class="phone-wrap">
+    <div class="plabel">Превʼю</div>
+    <div class="phone"><div class="notch"></div>
+      <div class="screen" id="todo_screen" style="background:#f0f0f8">
+        <div class="sbar" id="todo_sbar" style="background:#fff;color:#999"><span>9:41</span><span>🔋</span></div>
+        <div class="todo-header" id="todo_header" style="background:#fff">
+          <span class="todo-htitle" id="todo_title" style="color:#1a1a2e">📋 Мої задачі</span>
+          <button class="theme-toggle" id="theme_btn" style="background:#1a1a2e;color:#fff" onclick="toggleTheme()">🌙 Темна</button>
+        </div>
+        <div class="todo-add" id="todo_add" style="background:#fff;border-bottom:0.5px solid #eee">
+          <input class="todo-input" id="todo_inp" placeholder="Нова задача..." style="background:#f8f8f8;color:#1a1a2e;border-color:#ddd"/>
+          <button class="todo-addbtn" onclick="addTodo()">+</button>
+        </div>
+        <div class="todo-list" id="todo_list"></div>
+        <div class="todo-stats" id="todo_statsbar" style="background:#fff">
+          <span class="todo-stat" id="todo_total"></span>
+          <span class="todo-stat" id="todo_done_ct"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cwrap">
+    <div class="ctabs">
+      <button class="ct active" onclick="switchCode(1,0)">ThemeContext.js</button>
+      <button class="ct" onclick="switchCode(1,1)">TodoItem.js</button>
+      <button class="ct" onclick="switchCode(1,2)">App.js</button>
+      <button class="ct" onclick="switchCode(1,3)">themes.js</button>
+    </div>
+    <div class="cb">
+<div id="c1-0" class="cf active"><span class="cm">// context/ThemeContext.js</span>
+<span class="kw">import</span> React, { createContext, useContext,
+                 useState, useEffect } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> AsyncStorage <span class="kw">from</span> <span class="st">'@react-native-async-storage/async-storage'</span>;
+<span class="kw">import</span> { lightTheme, darkTheme } <span class="kw">from</span> <span class="st">'./themes'</span>;
+
+<span class="kw">const</span> ThemeContext = <span class="fn">createContext</span>(null);
+
+<span class="cm">// Провайдер — обгортає весь застосунок</span>
+<span class="kw">export function</span> <span class="fn">ThemeProvider</span>({ children }) {
+  <span class="kw">const</span> [isDark, setIsDark] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="cm">// Завантажуємо збережену тему при старті</span>
+  <span class="fn">useEffect</span>(() =&gt; {
+    <span class="kw">const</span> <span class="fn">load</span> = <span class="kw">async</span> () =&gt; {
+      <span class="kw">const</span> saved = <span class="kw">await</span> AsyncStorage.<span class="fn">getItem</span>(<span class="st">'theme'</span>);
+      <span class="kw">if</span> (saved) <span class="fn">setIsDark</span>(saved === <span class="st">'dark'</span>);
+    };
+    <span class="fn">load</span>();
+  }, []);
+
+  <span class="kw">const</span> <span class="fn">toggleTheme</span> = <span class="kw">async</span> () =&gt; {
+    <span class="kw">const</span> next = !isDark;
+    <span class="fn">setIsDark</span>(next);
+    <span class="cm">// Зберігаємо вибір — збережеться після перезапуску</span>
+    <span class="kw">await</span> AsyncStorage.<span class="fn">setItem</span>(<span class="st">'theme'</span>, next ? <span class="st">'dark'</span> : <span class="st">'light'</span>);
+  };
+
+  <span class="kw">return</span> (
+    &lt;ThemeContext.Provider value={{
+      theme: isDark ? darkTheme : lightTheme,
+      isDark,
+      <span class="fn">toggleTheme</span>,
+    }}&gt;
+      {children}
+    &lt;/ThemeContext.Provider&gt;
+  );
+}
+
+<span class="cm">// Хук для зручного доступу до теми в будь-якому компоненті</span>
+<span class="kw">export const</span> <span class="fn">useTheme</span> = () =&gt; <span class="fn">useContext</span>(ThemeContext);</div>
+<div id="c1-1" class="cf"><span class="cm">// components/TodoItem.js</span>
+<span class="kw">import</span> React, { useRef } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TouchableOpacity,
+         Animated, StyleSheet } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> { useTheme } <span class="kw">from</span> <span class="st">'../context/ThemeContext'</span>;
+
+<span class="kw">export default function</span> <span class="fn">TodoItem</span>({ todo, onToggle, onDelete }) {
+  <span class="kw">const</span> { theme } = <span class="fn">useTheme</span>();
+  <span class="kw">const</span> fadeAnim = <span class="fn">useRef</span>(<span class="kw">new</span> Animated.<span class="fn">Value</span>(<span class="nu">1</span>)).<span class="fn">current</span>;
+
+  <span class="kw">const</span> <span class="fn">handleDelete</span> = () =&gt; {
+    <span class="cm">// Анімація зникнення перед видаленням</span>
+    Animated.<span class="fn">timing</span>(fadeAnim, {
+      toValue: <span class="nu">0</span>, duration: <span class="nu">250</span>, useNativeDriver: <span class="kw">true</span>,
+    }).<span class="fn">start</span>(() =&gt; <span class="fn">onDelete</span>(todo.id));
+  };
+
+  <span class="kw">return</span> (
+    &lt;Animated.View style={{ opacity: fadeAnim }}&gt;
+      &lt;View style={[
+        styles.item,
+        { backgroundColor: theme.surface,   <span class="cm">// колір із теми</span>
+          borderColor:      theme.border }
+      ]}&gt;
+        &lt;TouchableOpacity
+          style={[styles.check,
+            todo.done &amp;&amp; { backgroundColor: theme.primary,
+                           borderColor: theme.primary }]}
+          onPress={() =&gt; <span class="fn">onToggle</span>(todo.id)}
+        &gt;
+          {todo.done &amp;&amp; &lt;Text style={{ color: <span class="st">'#fff'</span>, fontSize: <span class="nu">9</span> }}&gt;✓&lt;/Text&gt;}
+        &lt;/TouchableOpacity&gt;
+
+        &lt;Text style={[styles.text, { color: theme.textMain },
+          todo.done &amp;&amp; styles.textDone]}&gt;
+          {todo.text}
+        &lt;/Text&gt;
+
+        &lt;TouchableOpacity onPress={<span class="fn">handleDelete</span>}&gt;
+          &lt;Text style={styles.del}&gt;✕&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    &lt;/Animated.View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  item: {
+    flexDirection: <span class="st">'row'</span>, alignItems: <span class="st">'center'</span>,
+    borderRadius: <span class="nu">10</span>, padding: <span class="nu">10</span>,
+    borderWidth: <span class="nu">0.5</span>, marginBottom: <span class="nu">6</span>,
+  },
+  check: {
+    width: <span class="nu">18</span>, height: <span class="nu">18</span>, borderRadius: <span class="nu">5</span>,
+    borderWidth: <span class="nu">1.5</span>, borderColor: <span class="st">'#ccc'</span>,
+    marginRight: <span class="nu">10</span>, alignItems: <span class="st">'center'</span>, justifyContent: <span class="st">'center'</span>,
+  },
+  text:     { flex: <span class="nu">1</span>, fontSize: <span class="nu">13</span> },
+  textDone: { textDecorationLine: <span class="st">'line-through'</span>, opacity: <span class="nu">0.4</span> },
+  del:      { color: <span class="st">'#e74c3c'</span>, fontSize: <span class="nu">14</span>, paddingLeft: <span class="nu">6</span> },
+});</div>
+<div id="c1-2" class="cf"><span class="cm">// App.js</span>
+<span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TextInput,
+         TouchableOpacity, FlatList,
+         StyleSheet, SafeAreaView } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> { ThemeProvider, useTheme } <span class="kw">from</span> <span class="st">'./context/ThemeContext'</span>;
+<span class="kw">import</span> TodoItem <span class="kw">from</span> <span class="st">'./components/TodoItem'</span>;
+
+<span class="kw">function</span> <span class="fn">TodoApp</span>() {
+  <span class="kw">const</span> { theme, isDark, toggleTheme } = <span class="fn">useTheme</span>();
+  <span class="kw">const</span> [todos, setTodos] = <span class="fn">useState</span>([
+    { id: <span class="st">'1'</span>, text: <span class="st">'Вивчити React Native'</span>,  done: <span class="kw">false</span> },
+    { id: <span class="st">'2'</span>, text: <span class="st">'Зробити домашнє завдання'</span>, done: <span class="kw">true</span>  },
+  ]);
+  <span class="kw">const</span> [input, setInput] = <span class="fn">useState</span>(<span class="st">''</span>);
+
+  <span class="kw">const</span> <span class="fn">addTodo</span> = () =&gt; {
+    <span class="kw">if</span> (!input.<span class="fn">trim</span>()) <span class="kw">return</span>;
+    <span class="fn">setTodos</span>([...todos, { id: <span class="fn">Date.now</span>().<span class="fn">toString</span>(), text: input, done: <span class="kw">false</span> }]);
+    <span class="fn">setInput</span>(<span class="st">''</span>);
+  };
+  <span class="kw">const</span> <span class="fn">toggle</span> = (id) =&gt;
+    <span class="fn">setTodos</span>(todos.<span class="fn">map</span>(t =&gt; t.id === id ? {...t, done: !t.done} : t));
+  <span class="kw">const</span> <span class="fn">remove</span> = (id) =&gt;
+    <span class="fn">setTodos</span>(todos.<span class="fn">filter</span>(t =&gt; t.id !== id));
+
+  <span class="kw">return</span> (
+    &lt;SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]}&gt;
+      &lt;View style={[styles.header, { backgroundColor: theme.surface }]}&gt;
+        &lt;Text style={[styles.title, { color: theme.textMain }]}&gt;
+          📋 Мої задачі
+        &lt;/Text&gt;
+        &lt;TouchableOpacity style={[styles.themeBtn,
+                            { backgroundColor: theme.primary }]}
+                          onPress={<span class="fn">toggleTheme</span>}&gt;
+          &lt;Text style={{ color: <span class="st">'#fff'</span>, fontSize: <span class="nu">12</span> }}&gt;
+            {isDark ? <span class="st">'☀️ Світла'</span> : <span class="st">'🌙 Темна'</span>}
+          &lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+
+      &lt;View style={[styles.addRow, { backgroundColor: theme.surface }]}&gt;
+        &lt;TextInput
+          style={[styles.input, {
+            backgroundColor: theme.inputBg,
+            borderColor: theme.border,
+            color: theme.textMain,
+          }]}
+          value={input} onChangeText={<span class="fn">setInput</span>}
+          placeholder=<span class="st">"Нова задача..."</span>
+          placeholderTextColor={theme.textMuted}
+          onSubmitEditing={<span class="fn">addTodo</span>}
+        /&gt;
+        &lt;TouchableOpacity style={[styles.addBtn,
+                            { backgroundColor: theme.primary }]}
+                          onPress={<span class="fn">addTodo</span>}&gt;
+          &lt;Text style={{ color: <span class="st">'#fff'</span>, fontSize: <span class="nu">20</span> }}&gt;+&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+
+      &lt;FlatList data={todos} keyExtractor={i =&gt; i.id}
+        contentContainerStyle={styles.list}
+        renderItem={({ item }) =&gt; (
+          &lt;TodoItem todo={item} onToggle={<span class="fn">toggle</span>} onDelete={<span class="fn">remove</span>} /&gt;
+        )}
+      /&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    &lt;ThemeProvider&gt;&lt;TodoApp /&gt;&lt;/ThemeProvider&gt;
+  );
+}</div>
+<div id="c1-3" class="cf"><span class="cm">// context/themes.js — два об'єкти з кольорами тем</span>
+<span class="kw">export const</span> lightTheme = {
+  background: <span class="st">'#F0F0F8'</span>,
+  surface:    <span class="st">'#FFFFFF'</span>,
+  primary:    <span class="st">'#6C63FF'</span>,
+  textMain:   <span class="st">'#1A1A2E'</span>,
+  textMuted:  <span class="st">'#888888'</span>,
+  border:     <span class="st">'#E8E8EE'</span>,
+  inputBg:    <span class="st">'#F8F8F8'</span>,
+  headerBg:   <span class="st">'#FFFFFF'</span>,
+};
+
+<span class="kw">export const</span> darkTheme = {
+  background: <span class="st">'#0F0F1A'</span>,
+  surface:    <span class="st">'#1E1E2E'</span>,
+  primary:    <span class="st">'#9B8FFF'</span>,
+  textMain:   <span class="st">'#EAEAEA'</span>,
+  textMuted:  <span class="st">'#666680'</span>,
+  border:     <span class="st">'#2A2A3E'</span>,
+  inputBg:    <span class="st">'#16162A'</span>,
+  headerBg:   <span class="st">'#1E1E2E'</span>,
+};
+
+<span class="cm">/*
+  Як використовувати в компоненті:
+  
+  const { theme } = useTheme();
+  
+  style={{ backgroundColor: theme.surface }}
+  style={{ color: theme.textMain }}
+  
+  Зміна теми → React перерендерить всі компоненти,
+  що підписані на контекст — без перезавантаження.
+*/</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANEL 3 ══ -->
+<div id="mp2" class="panel">
+  <div class="phone-wrap">
+    <div class="plabel">Превʼю</div>
+    <div class="phone"><div class="notch"></div>
+      <div class="screen" style="background:#f0f0f8">
+        <div class="sbar" style="background:transparent;color:rgba(255,255,255,.7)"><span>9:41</span><span>🔋</span></div>
+        <div style="margin-top:-18px">
+          <div class="prof-header">
+            <div class="prof-avatar">🧑‍💻</div>
+            <div class="prof-name">Олексій Петренко</div>
+            <div class="prof-bio">React Native Developer • Київ</div>
+          </div>
+          <div class="prof-stats">
+            <div class="prof-stat"><div class="prof-stat-n">128</div><div class="prof-stat-l">Дописів</div></div>
+            <div class="prof-stat"><div class="prof-stat-n">4.9k</div><div class="prof-stat-l">Фоловерів</div></div>
+            <div class="prof-stat"><div class="prof-stat-n">312</div><div class="prof-stat-l">Підписок</div></div>
+          </div>
+        </div>
+        <div class="prof-tabs">
+          <button class="prof-tab active" onclick="profTab('friends',this)">👥 Друзі</button>
+          <button class="prof-tab" onclick="profTab('activity',this)">⚡ Активність</button>
+          <button class="prof-tab" onclick="profTab('settings',this)">⚙️ Налаш.</button>
+        </div>
+        <div class="prof-section">
+          <div id="pf_friends" class="prof-section-content">
+            <div class="friend-grid">
+              <div class="friend-item"><div class="friend-av">👩</div><div><div class="friend-name">Марія</div><div class="friend-status">🟢 Online</div></div></div>
+              <div class="friend-item"><div class="friend-av">👨</div><div><div class="friend-name">Дмитро</div><div class="friend-status">🔴 Офлайн</div></div></div>
+              <div class="friend-item"><div class="friend-av">👩‍🦱</div><div><div class="friend-name">Анна</div><div class="friend-status">🟢 Online</div></div></div>
+              <div class="friend-item"><div class="friend-av">🧑</div><div><div class="friend-name">Сергій</div><div class="friend-status">🟡 Зайнятий</div></div></div>
+            </div>
+          </div>
+          <div id="pf_activity" class="prof-section-content" style="display:none">
+            <div class="act-item"><div class="act-icon">💬</div><div><div class="act-title">Новий коментар</div><div class="act-time">2 хв тому</div></div></div>
+            <div class="act-item"><div class="act-icon">❤️</div><div><div class="act-title">Дмитро поставив лайк</div><div class="act-time">15 хв тому</div></div></div>
+            <div class="act-item"><div class="act-icon">👤</div><div><div class="act-title">Новий фоловер</div><div class="act-time">1 год тому</div></div></div>
+          </div>
+          <div id="pf_settings" class="prof-section-content" style="display:none">
+            <div class="set-item"><div class="set-left"><div class="set-icon">🔔</div><div class="set-label">Сповіщення</div></div><div class="set-arrow">›</div></div>
+            <div class="set-item"><div class="set-left"><div class="set-icon">🔒</div><div class="set-label">Конфіденційність</div></div><div class="set-arrow">›</div></div>
+            <div class="set-item"><div class="set-left"><div class="set-icon">🎨</div><div class="set-label">Зовнішній вигляд</div></div><div class="set-arrow">›</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cwrap">
+    <div class="ctabs">
+      <button class="ct active" onclick="switchCode(2,0)">ProfileHeader.js</button>
+      <button class="ct" onclick="switchCode(2,1)">FriendGrid.js</button>
+      <button class="ct" onclick="switchCode(2,2)">App.js</button>
+      <button class="ct" onclick="switchCode(2,3)">globalStyles.js</button>
+    </div>
+    <div class="cb">
+<div id="c2-0" class="cf active"><span class="cm">// components/ProfileHeader.js</span>
+<span class="kw">import</span> React, { useRef, useEffect } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, Image,
+         Animated, StyleSheet,
+         useWindowDimensions } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> { globalStyles, COLORS } <span class="kw">from</span> <span class="st">'../styles/globalStyles'</span>;
+
+<span class="kw">export default function</span> <span class="fn">ProfileHeader</span>({ user }) {
+  <span class="kw">const</span> { width } = <span class="fn">useWindowDimensions</span>();
+  <span class="cm">// Адаптивний аватар: 25% ширини екрана</span>
+  <span class="kw">const</span> avatarSize = width * <span class="nu">0.25</span>;
+
+  <span class="cm">// Анімація появи при монтуванні</span>
+  <span class="kw">const</span> fadeIn = <span class="fn">useRef</span>(<span class="kw">new</span> Animated.<span class="fn">Value</span>(<span class="nu">0</span>)).<span class="fn">current</span>;
+  <span class="fn">useEffect</span>(() =&gt; {
+    Animated.<span class="fn">timing</span>(fadeIn, {
+      toValue: <span class="nu">1</span>, duration: <span class="nu">600</span>, useNativeDriver: <span class="kw">true</span>,
+    }).<span class="fn">start</span>();
+  }, []);
+
+  <span class="kw">return</span> (
+    &lt;Animated.View style={[styles.header, { opacity: fadeIn }]}&gt;
+      &lt;Image
+        source={{ uri: user.avatar }}
+        style={[
+          styles.avatar,
+          <span class="cm">/* Адаптивний розмір: 25vw */</span>
+          { width: avatarSize, height: avatarSize,
+            borderRadius: avatarSize / <span class="nu">2</span> }
+        ]}
+      /&gt;
+      &lt;Text style={[globalStyles.heading, styles.name]}&gt;
+        {user.name}
+      &lt;/Text&gt;
+      &lt;Text style={globalStyles.bodyText}&gt;{user.bio}&lt;/Text&gt;
+
+      <span class="cm">{/* Статистика — Flexbox: row, рівномірний розподіл */}</span>
+      &lt;View style={styles.statsRow}&gt;
+        {user.stats.<span class="fn">map</span>((s, i) =&gt; (
+          &lt;View key={i} style={styles.stat}&gt;
+            &lt;Text style={styles.statNum}&gt;{s.value}&lt;/Text&gt;
+            &lt;Text style={styles.statLabel}&gt;{s.label}&lt;/Text&gt;
+          &lt;/View&gt;
+        ))}
+      &lt;/View&gt;
+    &lt;/Animated.View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  header: {
+    background: <span class="st">'linear-gradient(160deg, #6C63FF, #a78bfa)'</span>,
+    padding: <span class="nu">20</span>, alignItems: <span class="st">'center'</span>,
+  },
+  avatar: { borderWidth: <span class="nu">3</span>, borderColor: <span class="st">'rgba(255,255,255,0.6)'</span>,
+            marginBottom: <span class="nu">10</span> },
+  name:   { color: <span class="st">'#fff'</span>, fontSize: <span class="nu">20</span>, marginBottom: <span class="nu">4</span> },
+  statsRow: {
+    flexDirection: <span class="st">'row'</span>,
+    backgroundColor: <span class="st">'#fff'</span>,
+    borderRadius: <span class="nu">14</span>,
+    padding: <span class="nu">12</span>,
+    marginTop: <span class="nu">16</span>,
+    width: <span class="st">'90%'</span>,
+    shadowColor: <span class="st">'#000'</span>,
+    shadowOffset: { width: <span class="nu">0</span>, height: <span class="nu">4</span> },
+    shadowOpacity: <span class="nu">0.12</span>, shadowRadius: <span class="nu">10</span>,
+    elevation: <span class="nu">5</span>,
+  },
+  stat:      { flex: <span class="nu">1</span>, alignItems: <span class="st">'center'</span> },
+  statNum:   { fontSize: <span class="nu">20</span>, fontWeight: <span class="st">'800'</span>, color: COLORS.primary },
+  statLabel: { fontSize: <span class="nu">11</span>, color: COLORS.textMuted, marginTop: <span class="nu">2</span> },
+});</div>
+<div id="c2-1" class="cf"><span class="cm">// components/FriendGrid.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, Image,
+         FlatList, StyleSheet,
+         useWindowDimensions } <span class="kw">from</span> <span class="st">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">FriendGrid</span>({ friends }) {
+  <span class="kw">const</span> { width } = <span class="fn">useWindowDimensions</span>();
+  <span class="cm">// Адаптивно: 2 колонки на телефоні, 4 на планшеті</span>
+  <span class="kw">const</span> numCols = width >= <span class="nu">768</span> ? <span class="nu">4</span> : <span class="nu">2</span>;
+  <span class="kw">const</span> itemWidth = (width - <span class="nu">48</span>) / numCols;
+
+  <span class="kw">return</span> (
+    &lt;FlatList
+      data={friends}
+      numColumns={numCols}
+      key={numCols} <span class="cm">// перерендер при зміні колонок</span>
+      keyExtractor={f =&gt; f.id}
+      renderItem={({ item }) =&gt; (
+        &lt;View style={[styles.item, { width: itemWidth }]}&gt;
+          &lt;Image
+            source={{ uri: item.avatar }}
+            style={styles.avatar}
+          /&gt;
+          &lt;Text style={styles.name}&gt;{item.name}&lt;/Text&gt;
+          &lt;Text style={styles.status}&gt;
+            {item.online ? <span class="st">'🟢 Online'</span> : <span class="st">'🔴 Офлайн'</span>}
+          &lt;/Text&gt;
+        &lt;/View&gt;
+      )}
+    /&gt;
+  );
+}
+
+<span class="cm">// Локальні стилі секції "Друзі"</span>
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  item: {
+    alignItems: <span class="st">'center'</span>, padding: <span class="nu">8</span>,
+    backgroundColor: <span class="st">'#fff'</span>, borderRadius: <span class="nu">12</span>,
+    margin: <span class="nu">4</span>,
+  },
+  avatar: { width: <span class="nu">44</span>, height: <span class="nu">44</span>, borderRadius: <span class="nu">22</span>,
+            marginBottom: <span class="nu">4</span> },
+  name:   { fontSize: <span class="nu">12</span>, fontWeight: <span class="st">'700'</span>, color: <span class="st">'#1a1a2e'</span> },
+  status: { fontSize: <span class="nu">9</span>, color: <span class="st">'#aaa'</span>, marginTop: <span class="nu">1</span> },
+});</div>
+<div id="c2-2" class="cf"><span class="cm">// App.js</span>
+<span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TouchableOpacity,
+         ScrollView, StyleSheet,
+         SafeAreaView } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> ProfileHeader <span class="kw">from</span> <span class="st">'./components/ProfileHeader'</span>;
+<span class="kw">import</span> FriendGrid    <span class="kw">from</span> <span class="st">'./components/FriendGrid'</span>;
+<span class="kw">import</span> ActivityFeed  <span class="kw">from</span> <span class="st">'./components/ActivityFeed'</span>;
+<span class="kw">import</span> Settings      <span class="kw">from</span> <span class="st">'./components/Settings'</span>;
+<span class="kw">import</span> { globalStyles } <span class="kw">from</span> <span class="st">'./styles/globalStyles'</span>;
+
+<span class="kw">const</span> TABS = [
+  { key: <span class="st">'friends'</span>,  label: <span class="st">'👥 Друзі'</span>     },
+  { key: <span class="st">'activity'</span>, label: <span class="st">'⚡ Активність'</span> },
+  { key: <span class="st">'settings'</span>, label: <span class="st">'⚙️ Налаш.'</span>     },
+];
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [tab, setTab] = <span class="fn">useState</span>(<span class="st">'friends'</span>);
+
+  <span class="kw">return</span> (
+    &lt;SafeAreaView style={globalStyles.screenContainer}&gt;
+      &lt;ScrollView stickyHeaderIndices={[<span class="nu">1</span>]}&gt;
+        &lt;ProfileHeader user={USER} /&gt;
+
+        <span class="cm">{/* Таб-навігація — "липне" при скролі */}</span>
+        &lt;View style={styles.tabBar}&gt;
+          {TABS.<span class="fn">map</span>(t =&gt; (
+            &lt;TouchableOpacity key={t.key}
+              style={[styles.tabItem, tab === t.key &amp;&amp; styles.tabActive]}
+              onPress={() =&gt; <span class="fn">setTab</span>(t.key)}&gt;
+              &lt;Text style={[styles.tabText,
+                tab === t.key &amp;&amp; styles.tabTextActive]}&gt;
+                {t.label}
+              &lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+          ))}
+        &lt;/View&gt;
+
+        &lt;View style={styles.content}&gt;
+          {tab === <span class="st">'friends'</span>  &amp;&amp; &lt;FriendGrid  friends={USER.friends}   /&gt;}
+          {tab === <span class="st">'activity'</span> &amp;&amp; &lt;ActivityFeed items={USER.activity}  /&gt;}
+          {tab === <span class="st">'settings'</span> &amp;&amp; &lt;Settings     options={USER.settings} /&gt;}
+        &lt;/View&gt;
+      &lt;/ScrollView&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}</div>
+<div id="c2-3" class="cf"><span class="cm">// styles/globalStyles.js — спільна база обох завдань</span>
+<span class="kw">import</span> { StyleSheet, Dimensions } <span class="kw">from</span> <span class="st">'react-native'</span>;
+
+<span class="kw">const</span> { width: SCREEN_W } = Dimensions.<span class="fn">get</span>(<span class="st">'window'</span>);
+
+<span class="kw">export const</span> COLORS = {
+  primary:    <span class="st">'#6C63FF'</span>,
+  secondary:  <span class="st">'#a78bfa'</span>,
+  background: <span class="st">'#F0F0F8'</span>,
+  surface:    <span class="st">'#FFFFFF'</span>,
+  textMain:   <span class="st">'#1A1A2E'</span>,
+  textMuted:  <span class="st">'#888888'</span>,
+};
+
+<span class="kw">export const</span> BREAKPOINTS = {
+  tablet: <span class="nu">768</span>,
+  isTablet: SCREEN_W >= <span class="nu">768</span>,
+};
+
+<span class="kw">export const</span> globalStyles = <span class="fn">StyleSheet.create</span>({
+  screenContainer: {
+    flex: <span class="nu">1</span>,
+    backgroundColor: COLORS.background,
+  },
+  heading: {
+    fontWeight: <span class="st">'700'</span>, color: COLORS.textMain,
+  },
+  bodyText: {
+    fontSize: <span class="nu">12</span>, color: COLORS.textMuted, lineHeight: <span class="nu">18</span>,
+  },
+  card: {
+    backgroundColor: COLORS.surface, borderRadius: <span class="nu">14</span>,
+    padding: <span class="nu">14</span>, elevation: <span class="nu">3</span>,
+    shadowColor: <span class="st">'#000'</span>,
+    shadowOffset: { width: <span class="nu">0</span>, height: <span class="nu">2</span> },
+    shadowOpacity: <span class="nu">0.07</span>, shadowRadius: <span class="nu">8</span>,
+  },
+  <span class="cm">// Адаптивна сітка: 1 колонка / 2 колонки</span>
+  gridRow: {
+    flexDirection: <span class="st">'row'</span>,
+    flexWrap: <span class="st">'wrap'</span>,
+  },
+  gridItem1: { width: <span class="st">'100%'</span> },
+  gridItem2: { width: <span class="st">'48%'</span>, margin: <span class="st">'1%'</span> },
+});</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchMain(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  ['mp0','mp1','mp2'].forEach((id,j)=>document.getElementById(id).classList.toggle('active',i===j));
+}
+function switchCode(p,f){
+  const prefix='c'+p+'-';
+  document.querySelectorAll('[id^="'+prefix+'"]').forEach(el=>el.classList.remove('active'));
+  document.getElementById(prefix+f).classList.add('active');
+  document.querySelectorAll('#mp'+p+' .ct').forEach((t,j)=>t.classList.toggle('active',j===f));
+}
+
+/* ── NEWS ── */
+const news=[
+  {cat:'tech',badge:'Технології',title:'React Native 0.76: нові можливості',desc:'Новий движок підвищує продуктивність на 40%.',time:'2 год тому'},
+  {cat:'sport',badge:'Спорт',title:'Шахтар у фіналі Ліги Чемпіонів',desc:'Яскрава перемога 3:1 виводить команду далі.',time:'5 год тому'},
+  {cat:'science',badge:'Наука',title:'Відкрито нову екзопланету',desc:'Телескоп James Webb знайшов планету у зоні життя зірки.',time:'1 день тому'},
+  {cat:'tech',badge:'Технології',title:'Apple представила M4 Ultra',desc:'Новий чіп перевершує конкурентів у 3 рази за продуктивністю.',time:'3 год тому'},
+];
+function renderNews(filter){
+  const list=document.getElementById('newslist');
+  const filtered=filter==='all'?news:news.filter(n=>n.cat===filter);
+  list.innerHTML=filtered.map(n=>`<div class="news-card">
+    <span class="news-badge">${n.badge}</span>
+    <div class="news-title">${n.title}</div>
+    <div class="news-desc">${n.desc}</div>
+    <div class="news-footer"><span class="news-time">⏱ ${n.time}</span><button class="news-btn">Читати більше</button></div>
+  </div>`).join('');
+}
+function filterNews(cat,btn){
+  document.querySelectorAll('.news-cat').forEach(b=>{b.style.background='#f0f0f8';b.style.color='#555';});
+  btn.style.background='#6C63FF';btn.style.color='#fff';
+  renderNews(cat);
+}
+renderNews('all');
+
+/* ── TODO ── */
+let darkMode=false;
+let todos=[{id:1,text:'Вивчити React Native',done:false},{id:2,text:'Зробити домашнє завдання',done:true},{id:3,text:'Налаштувати середовище',done:false}];
+function renderTodos(){
+  const sc=document.getElementById('todo_screen');
+  const bg=darkMode?'#0f0f1a':'#f0f0f8';
+  const surf=darkMode?'#1e1e2e':'#fff';
+  const txt=darkMode?'#eaeaea':'#1a1a2e';
+  const brd=darkMode?'#2a2a3e':'#eee';
+  sc.style.background=bg;
+  document.getElementById('todo_header').style.background=surf;
+  document.getElementById('todo_header').style.borderColor=brd;
+  document.getElementById('todo_title').style.color=txt;
+  document.getElementById('todo_add').style.background=surf;
+  document.getElementById('todo_statsbar').style.background=surf;
+  document.getElementById('todo_inp').style.background=darkMode?'#16162a':'#f8f8f8';
+  document.getElementById('todo_inp').style.borderColor=brd;
+  document.getElementById('todo_inp').style.color=txt;
+  document.getElementById('theme_btn').style.background=darkMode?'#9B8FFF':'#1a1a2e';
+  document.getElementById('theme_btn').textContent=darkMode?'☀️ Світла':'🌙 Темна';
+  const list=document.getElementById('todo_list');
+  list.innerHTML=todos.map(t=>`<div class="todo-item" style="background:${surf};border-color:${brd}" id="ti${t.id}">
+    <div class="todo-check${t.done?' task-checked':''}" style="${t.done?'background:#6C63FF;border-color:#6C63FF;color:#fff;':''}" onclick="toggleTodo(${t.id})">${t.done?'✓':''}</div>
+    <span class="todo-text" style="color:${txt};${t.done?'text-decoration:line-through;opacity:.5':''}">${t.text}</span>
+    <button class="todo-del" onclick="delTodo(${t.id})">✕</button>
+  </div>`).join('');
+  const done=todos.filter(t=>t.done).length;
+  document.getElementById('todo_total').textContent=`Всього: ${todos.length}`;
+  document.getElementById('todo_done_ct').textContent=`Виконано: ${done}`;
+}
+function toggleTheme(){darkMode=!darkMode;renderTodos();}
+function addTodo(){
+  const v=document.getElementById('todo_inp').value.trim();
+  if(!v)return;
+  todos.push({id:Date.now(),text:v,done:false});
+  document.getElementById('todo_inp').value='';
+  renderTodos();
+}
+function toggleTodo(id){todos=todos.map(t=>t.id===id?{...t,done:!t.done}:t);renderTodos();}
+function delTodo(id){todos=todos.filter(t=>t.id!==id);renderTodos();}
+renderTodos();
+
+/* ── PROFILE ── */
+function profTab(tab,btn){
+  document.querySelectorAll('.prof-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.prof-section-content').forEach(s=>s.style.display='none');
+  document.getElementById('pf_'+tab).style.display='block';
+}
+</script>
