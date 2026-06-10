@@ -1,0 +1,1060 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif}
+.tabs{display:flex;border-bottom:1px solid var(--color-border-tertiary);overflow-x:auto}
+.tab{padding:9px 14px;font-size:12px;cursor:pointer;border:none;background:none;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;flex-shrink:0}
+.tab.active{color:var(--color-text-primary);border-bottom-color:#6C63FF;font-weight:600}
+.panel{display:none;flex-direction:row;gap:20px;padding:16px 0}
+.panel.active{display:flex}
+/* phone */
+.pw{flex:0 0 192px}
+.plbl{font-size:10px;color:#aaa;text-align:center;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
+.phone{background:#16162a;border-radius:30px;padding:10px;border:2.5px solid #2a2a45;box-shadow:0 8px 28px rgba(0,0,0,.32)}
+.notch{width:55px;height:7px;background:#2a2a45;border-radius:4px;margin:0 auto 7px}
+.screen{border-radius:20px;overflow:hidden;height:440px;display:flex;flex-direction:column;transition:background .4s,color .4s}
+.sbar{display:flex;justify-content:space-between;padding:4px 12px;font-size:9px}
+/* code */
+.cw{flex:1;min-width:0}
+.ctabs{display:flex;flex-wrap:wrap;border-bottom:.5px solid var(--color-border-tertiary);margin-bottom:7px}
+.ct{padding:5px 12px;font-size:10.2px;cursor:pointer;border:none;background:none;color:var(--color-text-tertiary);border-bottom:2px solid transparent;margin-bottom:-.5px;white-space:nowrap}
+.ct.active{color:var(--color-text-primary);border-bottom-color:#6C63FF;font-weight:500}
+.cb{background:var(--color-background-secondary);border-radius:10px;border:.5px solid var(--color-border-tertiary);padding:13px;font-family:var(--font-mono);font-size:10.1px;line-height:1.7;overflow:auto;max-height:420px;white-space:pre}
+.cf{display:none}.cf.active{display:block}
+.kw{color:#9B8FFF}.st{color:#1D9E75}.fn{color:#2176AE}.cm{color:#888;font-style:italic}.nu{color:#D85A30}
+
+/* ── SIM SHARED ── */
+.s-full{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px}
+.s-hdr{width:100%;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:.5px solid rgba(0,0,0,.08)}
+.s-htitle{font-size:13px;font-weight:700}
+.s-btn{border:none;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.s-btn:active{opacity:.7}
+.s-row{display:flex;gap:8px;width:100%}
+
+/* 1 counter */
+.cnt-num{font-size:64px;font-weight:800;color:#6C63FF;line-height:1;text-align:center;min-width:120px}
+.cnt-sub{font-size:11px;color:#aaa;text-align:center}
+.cnt-btns{display:flex;gap:8px}
+.cnt-btn{width:44px;height:44px;border-radius:22px;border:none;font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cnt-auto{border-radius:20px;border:none;padding:7px 18px;font-size:11px;font-weight:700;cursor:pointer}
+.cnt-bar{width:100%;height:4px;border-radius:2px;background:#e0e0f0;overflow:hidden}
+.cnt-fill{height:100%;border-radius:2px;background:#6C63FF;transition:width .3s}
+
+/* 2 todo */
+.td-add{display:flex;gap:6px;padding:8px 10px;border-bottom:.5px solid rgba(0,0,0,.06)}
+.td-inp{flex:1;border-radius:8px;border:1px solid #ddd;padding:5px 9px;font-size:11px;outline:none}
+.td-addb{border:none;border-radius:8px;width:30px;height:30px;background:#6C63FF;color:#fff;font-size:17px;cursor:pointer;font-weight:700;flex-shrink:0}
+.td-list{flex:1;overflow-y:auto;padding:6px 10px;display:flex;flex-direction:column;gap:5px}
+.td-item{border-radius:10px;padding:7px 10px;display:flex;align-items:center;gap:7px;border:.5px solid rgba(0,0,0,.06);background:#fff;position:relative;overflow:hidden}
+.td-ck{width:17px;height:17px;border-radius:5px;border:1.5px solid #ccc;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .2s}
+.td-txt{flex:1;font-size:11px;color:#1a1a2e}
+.td-edi{flex:1;border:none;outline:none;font-size:11px;color:#1a1a2e;background:transparent;padding:0}
+.td-del{border:none;background:none;color:#e74c3c;font-size:13px;cursor:pointer;padding:0 2px}
+.td-edit-btn{border:none;background:none;color:#aaa;font-size:12px;cursor:pointer;padding:0 2px}
+.td-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;border-radius:20px;padding:7px 16px;font-size:11px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99;white-space:nowrap}
+.td-toast.show{opacity:1}
+.td-stats{padding:5px 10px;font-size:10px;color:#aaa;border-top:.5px solid rgba(0,0,0,.06);display:flex;justify-content:space-between}
+.td-new-flash{animation:flash .5s ease}
+@keyframes flash{0%{background:#eef}100%{background:#fff}}
+
+/* 3 timer */
+.tm-face{width:150px;height:150px;border-radius:75px;border:5px solid #6C63FF;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.tm-ring{position:absolute;top:-5px;left:-5px;width:150px;height:150px}
+.tm-time{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;color:#1a1a2e;line-height:1}
+.tm-ms{font-size:14px;color:#aaa;font-weight:500;margin-top:2px}
+.tm-btns{display:flex;gap:8px}
+.tm-btn{border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer}
+.tm-set{display:flex;gap:6px;align-items:center}
+.tm-setlbl{font-size:11px;color:#888}
+.tm-setinp{width:50px;border:1px solid #ddd;border-radius:6px;padding:4px 6px;font-size:11px;text-align:center;outline:none}
+.tm-label{font-size:11px;color:#aaa;font-weight:500}
+
+/* 4 theme */
+.th-card{border-radius:14px;padding:14px;width:100%;box-shadow:0 2px 10px rgba(0,0,0,.08);transition:background .4s,color .4s}
+.th-ctitle{font-size:12px;font-weight:700;margin-bottom:4px}
+.th-cbody{font-size:10px;line-height:1.5}
+.th-toggle{width:100%;border:none;border-radius:12px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .3s,color .3s}
+.th-pill{width:44px;height:24px;border-radius:12px;position:relative;transition:background .3s;cursor:pointer;border:none}
+.th-knob{width:18px;height:18px;border-radius:9px;background:#fff;position:absolute;top:3px;transition:left .3s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.th-row{display:flex;justify-content:space-between;align-items:center;width:100%}
+.th-lbl{font-size:12px;font-weight:600}
+.th-saved{font-size:10px;text-align:center;opacity:.6;margin-top:4px}
+</style>
+
+<div class="tabs">
+  <button class="tab active" onclick="ST(0)">1. Лічильник</button>
+  <button class="tab" onclick="ST(1)">2. Список справ</button>
+  <button class="tab" onclick="ST(2)">3. Таймер</button>
+  <button class="tab" onclick="ST(3)">4. Теми</button>
+</div>
+
+<!-- ══ 1. COUNTER ══ -->
+<div id="mp0" class="panel active">
+  <div class="pw"><div class="plbl">Превʼю</div>
+    <div class="phone"><div class="notch"></div>
+      <div class="screen" style="background:#f0f0f8">
+        <div class="sbar" style="background:#fff;color:#999"><span>9:41</span><span>🔋</span></div>
+        <div class="s-hdr" style="background:#fff">
+          <span class="s-htitle" style="color:#1a1a2e">🔢 Лічильник</span>
+          <button class="s-btn" style="background:#f0f0f8;color:#6C63FF;font-size:10px" onclick="cntReset()">Скинути</button>
+        </div>
+        <div class="s-full" style="background:#f0f0f8;gap:12px">
+          <div style="text-align:center">
+            <div class="cnt-num" id="cnt_num">0</div>
+            <div class="cnt-sub" id="cnt_sub">Поточне значення</div>
+          </div>
+          <div class="cnt-bar"><div class="cnt-fill" id="cnt_fill" style="width:50%"></div></div>
+          <div class="cnt-btns">
+            <button class="cnt-btn" style="background:#ffe0e0;color:#e74c3c" onclick="cntChange(-1)">−</button>
+            <button class="cnt-btn" style="background:#e0ffe8;color:#2ecc71" onclick="cntChange(1)">+</button>
+          </div>
+          <div class="cnt-btns">
+            <button class="cnt-btn" style="background:#ffe0e0;color:#e74c3c;width:56px;border-radius:10px" onclick="cntChange(-10)">−10</button>
+            <button class="cnt-btn" style="background:#e0ffe8;color:#2ecc71;width:56px;border-radius:10px" onclick="cntChange(10)">+10</button>
+          </div>
+          <button class="cnt-auto" id="cnt_auto_btn" style="background:#6C63FF;color:#fff" onclick="cntToggleAuto()">▶ Авто +1/сек</button>
+          <div style="font-size:10px;color:#aaa;text-align:center" id="cnt_saved">💾 Збережено в AsyncStorage</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cw">
+    <div class="ctabs">
+      <button class="ct active" onclick="SC(0,0)">App.js</button>
+      <button class="ct" onclick="SC(0,1)">useCounter.js</button>
+      <button class="ct" onclick="SC(0,2)">CounterDisplay.js</button>
+    </div>
+    <div class="cb">
+<div id="c0-0" class="cf active"><span class="cm">// App.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TouchableOpacity,
+         StyleSheet, SafeAreaView } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> { useCounter } <span class="kw">from</span> <span class="st">'./hooks/useCounter'</span>;
+<span class="kw">import</span> CounterDisplay <span class="kw">from</span> <span class="st">'./components/CounterDisplay'</span>;
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> {
+    count, isAuto,
+    increment, decrement,
+    incrementBy, decrementBy,
+    reset, toggleAuto,
+  } = <span class="fn">useCounter</span>(<span class="nu">0</span>);
+
+  <span class="kw">return</span> (
+    &lt;SafeAreaView style={styles.safe}&gt;
+      &lt;View style={styles.header}&gt;
+        &lt;Text style={styles.title}&gt;🔢 Лічильник&lt;/Text&gt;
+        &lt;TouchableOpacity style={styles.resetBtn} onPress={<span class="fn">reset</span>}&gt;
+          &lt;Text style={styles.resetText}&gt;Скинути&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+
+      &lt;CounterDisplay count={count} /&gt;
+
+      &lt;View style={styles.controls}&gt;
+        &lt;View style={styles.btnRow}&gt;
+          &lt;TouchableOpacity style={[styles.btn, styles.btnMinus]}
+            onPress={() =&gt; <span class="fn">decrementBy</span>(<span class="nu">10</span>)}&gt;
+            &lt;Text style={styles.btnTxt}&gt;−10&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+          &lt;TouchableOpacity style={[styles.btn, styles.btnBig, styles.btnMinus]}
+            onPress={<span class="fn">decrement</span>}&gt;
+            &lt;Text style={styles.btnTxt}&gt;−&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+          &lt;TouchableOpacity style={[styles.btn, styles.btnBig, styles.btnPlus]}
+            onPress={<span class="fn">increment</span>}&gt;
+            &lt;Text style={styles.btnTxt}&gt;+&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+          &lt;TouchableOpacity style={[styles.btn, styles.btnPlus]}
+            onPress={() =&gt; <span class="fn">incrementBy</span>(<span class="nu">10</span>)}&gt;
+            &lt;Text style={styles.btnTxt}&gt;+10&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+        &lt;/View&gt;
+
+        &lt;TouchableOpacity
+          style={[styles.autoBtn, isAuto &amp;&amp; styles.autoBtnActive]}
+          onPress={<span class="fn">toggleAuto</span>}
+        &gt;
+          &lt;Text style={styles.autoBtnText}&gt;
+            {isAuto ? <span class="st">'⏸ Зупинити авто'</span> : <span class="st">'▶ Авто +1/сек'</span>}
+          &lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}</div>
+<div id="c0-1" class="cf"><span class="cm">// hooks/useCounter.js</span>
+<span class="kw">import</span> { useState, useEffect, useRef } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> AsyncStorage <span class="kw">from</span> <span class="st">'@react-native-async-storage/async-storage'</span>;
+
+<span class="kw">const</span> STORAGE_KEY = <span class="st">'@counter_value'</span>;
+
+<span class="kw">export function</span> <span class="fn">useCounter</span>(initialValue = <span class="nu">0</span>) {
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(initialValue);
+  <span class="kw">const</span> [isAuto, setIsAuto]   = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> intervalRef = <span class="fn">useRef</span>(<span class="kw">null</span>);
+
+  <span class="cm">// Відновлення значення після перезапуску</span>
+  <span class="fn">useEffect</span>(() =&gt; {
+    <span class="kw">const</span> <span class="fn">load</span> = <span class="kw">async</span> () =&gt; {
+      <span class="kw">const</span> saved = <span class="kw">await</span> AsyncStorage.<span class="fn">getItem</span>(STORAGE_KEY);
+      <span class="kw">if</span> (saved !== <span class="kw">null</span>) <span class="fn">setCount</span>(<span class="fn">Number</span>(saved));
+    };
+    <span class="fn">load</span>();
+  }, []);
+
+  <span class="cm">// Збереження при кожній зміні</span>
+  <span class="fn">useEffect</span>(() =&gt; {
+    AsyncStorage.<span class="fn">setItem</span>(STORAGE_KEY, <span class="fn">String</span>(count));
+  }, [count]);
+
+  <span class="cm">// Автоматичний режим: setInterval + clearInterval при cleanup</span>
+  <span class="fn">useEffect</span>(() =&gt; {
+    <span class="kw">if</span> (isAuto) {
+      intervalRef.current = <span class="fn">setInterval</span>(() =&gt; {
+        <span class="fn">setCount</span>(prev =&gt; prev + <span class="nu">1</span>); <span class="cm">// функційне оновлення — безпечно</span>
+      }, <span class="nu">1000</span>);
+    } <span class="kw">else</span> {
+      <span class="fn">clearInterval</span>(intervalRef.current);
+    }
+    <span class="cm">// Cleanup при розмонтуванні або зміні isAuto</span>
+    <span class="kw">return</span> () =&gt; <span class="fn">clearInterval</span>(intervalRef.current);
+  }, [isAuto]);
+
+  <span class="kw">return</span> {
+    count,
+    isAuto,
+    increment:   () =&gt; <span class="fn">setCount</span>(c =&gt; c + <span class="nu">1</span>),
+    decrement:   () =&gt; <span class="fn">setCount</span>(c =&gt; c - <span class="nu">1</span>),
+    incrementBy: (n) =&gt; <span class="fn">setCount</span>(c =&gt; c + n),
+    decrementBy: (n) =&gt; <span class="fn">setCount</span>(c =&gt; c - n),
+    reset:       () =&gt; <span class="fn">setCount</span>(<span class="nu">0</span>),
+    toggleAuto:  () =&gt; <span class="fn">setIsAuto</span>(a =&gt; !a),
+  };
+}</div>
+<div id="c0-2" class="cf"><span class="cm">// components/CounterDisplay.js</span>
+<span class="kw">import</span> React, { useEffect, useRef } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, Animated, StyleSheet } <span class="kw">from</span> <span class="st">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">CounterDisplay</span>({ count }) {
+  <span class="cm">// Анімація "підстрибування" при зміні</span>
+  <span class="kw">const</span> scaleAnim = <span class="fn">useRef</span>(<span class="kw">new</span> Animated.<span class="fn">Value</span>(<span class="nu">1</span>)).<span class="fn">current</span>;
+
+  <span class="fn">useEffect</span>(() =&gt; {
+    Animated.<span class="fn">sequence</span>([
+      Animated.<span class="fn">timing</span>(scaleAnim, {
+        toValue: <span class="nu">1.15</span>, duration: <span class="nu">80</span>, useNativeDriver: <span class="kw">true</span>
+      }),
+      Animated.<span class="fn">timing</span>(scaleAnim, {
+        toValue: <span class="nu">1</span>, duration: <span class="nu">80</span>, useNativeDriver: <span class="kw">true</span>
+      }),
+    ]).<span class="fn">start</span>();
+  }, [count]);
+
+  <span class="cm">// Прогрес-бар: 0..100 відноситься до діапазону -50..50</span>
+  <span class="kw">const</span> progress = Math.<span class="fn">min</span>(<span class="nu">100</span>, Math.<span class="fn">max</span>(<span class="nu">0</span>, (count + <span class="nu">50</span>) / <span class="nu">100</span> * <span class="nu">100</span>));
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;Animated.Text
+        style={[styles.number, { transform: [{ scale: scaleAnim }] }]}&gt;
+        {count}
+      &lt;/Animated.Text&gt;
+
+      &lt;View style={styles.progressTrack}&gt;
+        &lt;View style={[styles.progressFill, { width: `${progress}%` }]} /&gt;
+      &lt;/View&gt;
+      &lt;Text style={styles.hint}&gt;💾 Збережено в AsyncStorage&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 2. TODO ══ -->
+<div id="mp1" class="panel">
+  <div class="pw"><div class="plbl">Превʼю</div>
+    <div class="phone"><div class="notch"></div>
+      <div class="screen" style="background:#f0f0f8">
+        <div class="sbar" style="background:#6C63FF;color:rgba(255,255,255,.8)"><span>9:41</span><span>🔋</span></div>
+        <div style="background:#6C63FF;padding:8px 12px 12px">
+          <div style="color:#fff;font-size:13px;font-weight:700">📋 Список справ</div>
+          <div style="color:rgba(255,255,255,.7);font-size:10px;margin-top:1px" id="td_subtitle">0 виконано з 0</div>
+        </div>
+        <div class="td-add" style="background:#fff">
+          <input class="td-inp" id="td_inp" placeholder="Нова справа..." onkeydown="if(event.key==='Enter')tdAdd()"/>
+          <button class="td-addb" onclick="tdAdd()">+</button>
+        </div>
+        <div class="td-list" id="td_list"></div>
+        <div class="td-stats" style="background:#fff" id="td_stats"></div>
+        <div class="td-toast" id="td_toast"></div>
+      </div>
+    </div>
+  </div>
+  <div class="cw">
+    <div class="ctabs">
+      <button class="ct active" onclick="SC(1,0)">useTodos.js</button>
+      <button class="ct" onclick="SC(1,1)">TodoItem.js</button>
+      <button class="ct" onclick="SC(1,2)">App.js</button>
+    </div>
+    <div class="cb">
+<div id="c1-0" class="cf active"><span class="cm">// hooks/useTodos.js</span>
+<span class="kw">import</span> { useState, useEffect, useCallback } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> AsyncStorage <span class="kw">from</span> <span class="st">'@react-native-async-storage/async-storage'</span>;
+
+<span class="kw">const</span> KEY = <span class="st">'@todos'</span>;
+
+<span class="kw">export function</span> <span class="fn">useTodos</span>() {
+  <span class="kw">const</span> [todos, setTodos]       = <span class="fn">useState</span>([]);
+  <span class="kw">const</span> [toast, setToast]       = <span class="fn">useState</span>(<span class="st">''</span>);
+  <span class="kw">const</span> [toastVisible, setToastVisible] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="cm">// Завантаження при старті</span>
+  <span class="fn">useEffect</span>(() =&gt; {
+    AsyncStorage.<span class="fn">getItem</span>(KEY).<span class="fn">then</span>(data =&gt; {
+      <span class="kw">if</span> (data) <span class="fn">setTodos</span>(JSON.<span class="fn">parse</span>(data));
+    });
+  }, []);
+
+  <span class="cm">// Автозбереження при кожній зміні</span>
+  <span class="fn">useEffect</span>(() =&gt; {
+    AsyncStorage.<span class="fn">setItem</span>(KEY, JSON.<span class="fn">stringify</span>(todos));
+  }, [todos]);
+
+  <span class="cm">// Сповіщення</span>
+  <span class="kw">const</span> <span class="fn">notify</span> = <span class="fn">useCallback</span>((msg) =&gt; {
+    <span class="fn">setToast</span>(msg);
+    <span class="fn">setToastVisible</span>(<span class="kw">true</span>);
+    <span class="fn">setTimeout</span>(() =&gt; <span class="fn">setToastVisible</span>(<span class="kw">false</span>), <span class="nu">2000</span>);
+  }, []);
+
+  <span class="kw">const</span> <span class="fn">add</span> = (text) =&gt; {
+    <span class="kw">if</span> (!text.<span class="fn">trim</span>()) <span class="kw">return</span>;
+    <span class="fn">setTodos</span>(prev =&gt; [
+      ...prev,
+      { id: <span class="fn">Date.now</span>().<span class="fn">toString</span>(), text, done: <span class="kw">false</span> }
+    ]);
+    <span class="fn">notify</span>(<span class="st">'✅ Справу додано'</span>);
+  };
+
+  <span class="kw">const</span> <span class="fn">toggle</span> = (id) =&gt; {
+    <span class="fn">setTodos</span>(prev =&gt; prev.<span class="fn">map</span>(t =&gt;
+      t.id === id ? { ...t, done: !t.done } : t
+    ));
+  };
+
+  <span class="kw">const</span> <span class="fn">edit</span> = (id, newText) =&gt; {
+    <span class="fn">setTodos</span>(prev =&gt; prev.<span class="fn">map</span>(t =&gt;
+      t.id === id ? { ...t, text: newText } : t
+    ));
+    <span class="fn">notify</span>(<span class="st">'✏️ Справу оновлено'</span>);
+  };
+
+  <span class="kw">const</span> <span class="fn">remove</span> = (id) =&gt; {
+    <span class="fn">setTodos</span>(prev =&gt; prev.<span class="fn">filter</span>(t =&gt; t.id !== id));
+    <span class="fn">notify</span>(<span class="st">'🗑 Справу видалено'</span>);
+  };
+
+  <span class="kw">return</span> { todos, toast, toastVisible, add, toggle, edit, remove };
+}</div>
+<div id="c1-1" class="cf"><span class="cm">// components/TodoItem.js</span>
+<span class="kw">import</span> React, { useState, useRef } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TextInput,
+         TouchableOpacity, Animated, StyleSheet }
+  <span class="kw">from</span> <span class="st">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">TodoItem</span>({ todo, onToggle, onEdit, onDelete }) {
+  <span class="kw">const</span> [editing, setEditing] = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> [draft, setDraft]     = <span class="fn">useState</span>(todo.text);
+
+  <span class="cm">// Анімація появи нового елемента</span>
+  <span class="kw">const</span> slideAnim = <span class="fn">useRef</span>(<span class="kw">new</span> Animated.<span class="fn">Value</span>(<span class="nu">0</span>)).<span class="fn">current</span>;
+  <span class="fn">useRef</span>(Animated.<span class="fn">spring</span>(slideAnim, {
+    toValue: <span class="nu">1</span>, useNativeDriver: <span class="kw">true</span>, tension: <span class="nu">80</span>,
+  }).<span class="fn">start</span>());
+
+  <span class="kw">const</span> <span class="fn">saveEdit</span> = () =&gt; {
+    <span class="fn">onEdit</span>(todo.id, draft);
+    <span class="fn">setEditing</span>(<span class="kw">false</span>);
+  };
+
+  <span class="kw">return</span> (
+    &lt;Animated.View style={{
+      opacity: slideAnim,
+      transform: [{ translateY: slideAnim.<span class="fn">interpolate</span>({
+        inputRange:  [<span class="nu">0</span>, <span class="nu">1</span>],
+        outputRange: [<span class="nu">16</span>, <span class="nu">0</span>],
+      }) }],
+    }}&gt;
+      &lt;View style={styles.item}&gt;
+        &lt;TouchableOpacity
+          style={[styles.check, todo.done &amp;&amp; styles.checkDone]}
+          onPress={() =&gt; <span class="fn">onToggle</span>(todo.id)}
+        &gt;
+          {todo.done &amp;&amp; &lt;Text style={{ color: <span class="st">'#fff'</span>, fontSize: <span class="nu">9</span> }}&gt;✓&lt;/Text&gt;}
+        &lt;/TouchableOpacity&gt;
+
+        {editing ? (
+          &lt;TextInput
+            style={styles.editInput}
+            value={draft}
+            onChangeText={<span class="fn">setDraft</span>}
+            onSubmitEditing={<span class="fn">saveEdit</span>}
+            autoFocus
+          /&gt;
+        ) : (
+          &lt;Text style={[styles.text, todo.done &amp;&amp; styles.done]}&gt;
+            {todo.text}
+          &lt;/Text&gt;
+        )}
+
+        {editing ? (
+          &lt;TouchableOpacity onPress={<span class="fn">saveEdit</span>}&gt;
+            &lt;Text style={styles.saveBtn}&gt;✓&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+        ) : (
+          &lt;TouchableOpacity onPress={() =&gt; <span class="fn">setEditing</span>(<span class="kw">true</span>)}&gt;
+            &lt;Text style={styles.editBtn}&gt;✏️&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+        )}
+        &lt;TouchableOpacity onPress={() =&gt; <span class="fn">onDelete</span>(todo.id)}&gt;
+          &lt;Text style={styles.delBtn}&gt;✕&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    &lt;/Animated.View&gt;
+  );
+}</div>
+<div id="c1-2" class="cf"><span class="cm">// App.js</span>
+<span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TextInput, TouchableOpacity,
+         FlatList, Animated, StyleSheet } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> { useTodos } <span class="kw">from</span> <span class="st">'./hooks/useTodos'</span>;
+<span class="kw">import</span> TodoItem <span class="kw">from</span> <span class="st">'./components/TodoItem'</span>;
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [input, setInput] = <span class="fn">useState</span>(<span class="st">''</span>);
+  <span class="kw">const</span> { todos, toast, toastVisible,
+          add, toggle, edit, remove } = <span class="fn">useTodos</span>();
+
+  <span class="kw">const</span> done = todos.<span class="fn">filter</span>(t =&gt; t.done).length;
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;View style={styles.topBar}&gt;
+        &lt;Text style={styles.title}&gt;📋 Список справ&lt;/Text&gt;
+        &lt;Text style={styles.subtitle}&gt;
+          {done} виконано з {todos.length}
+        &lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;View style={styles.addRow}&gt;
+        &lt;TextInput
+          style={styles.input}
+          value={input}
+          onChangeText={<span class="fn">setInput</span>}
+          onSubmitEditing={() =&gt; { <span class="fn">add</span>(input); <span class="fn">setInput</span>(<span class="st">''</span>); }}
+          placeholder=<span class="st">"Нова справа..."</span>
+        /&gt;
+        &lt;TouchableOpacity style={styles.addBtn}
+          onPress={() =&gt; { <span class="fn">add</span>(input); <span class="fn">setInput</span>(<span class="st">''</span>); }}&gt;
+          &lt;Text style={{ color: <span class="st">'#fff'</span>, fontSize: <span class="nu">20</span> }}&gt;+&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+
+      &lt;FlatList data={todos} keyExtractor={i =&gt; i.id}
+        renderItem={({ item }) =&gt; (
+          &lt;TodoItem todo={item}
+            onToggle={<span class="fn">toggle</span>} onEdit={<span class="fn">edit</span>} onDelete={<span class="fn">remove</span>} /&gt;
+        )}
+      /&gt;
+
+      <span class="cm">{/* Toast-сповіщення */}</span>
+      {toastVisible &amp;&amp; (
+        &lt;View style={styles.toast}&gt;
+          &lt;Text style={styles.toastText}&gt;{toast}&lt;/Text&gt;
+        &lt;/View&gt;
+      )}
+    &lt;/View&gt;
+  );
+}</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 3. TIMER ══ -->
+<div id="mp2" class="panel">
+  <div class="pw"><div class="plbl">Превʼю</div>
+    <div class="phone"><div class="notch"></div>
+      <div class="screen" style="background:#f0f0f8">
+        <div class="sbar" style="background:#fff;color:#999"><span>9:41</span><span>🔋</span></div>
+        <div class="s-hdr" style="background:#fff"><span class="s-htitle" style="color:#1a1a2e">⏱ Таймер</span></div>
+        <div class="s-full" style="background:#f0f0f8">
+          <div class="tm-label" id="tm_label">Готовий до старту</div>
+          <div class="tm-face" id="tm_face">
+            <svg class="tm-ring" viewBox="0 0 150 150">
+              <circle cx="75" cy="75" r="68" fill="none" stroke="#e8e8f0" stroke-width="5"/>
+              <circle id="tm_arc" cx="75" cy="75" r="68" fill="none" stroke="#6C63FF" stroke-width="5"
+                stroke-linecap="round" stroke-dasharray="427" stroke-dashoffset="0"
+                transform="rotate(-90 75 75)" style="transition:stroke-dashoffset .3s,stroke .3s"/>
+            </svg>
+            <div class="tm-time" id="tm_display">05:00</div>
+            <div class="tm-ms" id="tm_ms">.00</div>
+          </div>
+          <div class="tm-btns">
+            <button class="tm-btn" id="tm_start" style="background:#6C63FF;color:#fff" onclick="tmStart()">▶ Старт</button>
+            <button class="tm-btn" style="background:#f0f0f8;color:#555" onclick="tmReset()">↺ Скидання</button>
+          </div>
+          <div class="tm-set">
+            <span class="tm-setlbl">Старт (хв):</span>
+            <input class="tm-setinp" id="tm_setinp" type="number" value="5" min="1" max="99" onchange="tmSetStart()"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cw">
+    <div class="ctabs">
+      <button class="ct active" onclick="SC(2,0)">useTimer.js</button>
+      <button class="ct" onclick="SC(2,1)">TimerFace.js</button>
+      <button class="ct" onclick="SC(2,2)">App.js</button>
+    </div>
+    <div class="cb">
+<div id="c2-0" class="cf active"><span class="cm">// hooks/useTimer.js</span>
+<span class="kw">import</span> { useState, useEffect, useRef, useCallback } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { Vibration } <span class="kw">from</span> <span class="st">'react-native'</span>;
+
+<span class="kw">export function</span> <span class="fn">useTimer</span>(initialMinutes = <span class="nu">5</span>) {
+  <span class="kw">const</span> TOTAL = initialMinutes * <span class="nu">60</span> * <span class="nu">100</span>; <span class="cm">// сотні секунди</span>
+  <span class="kw">const</span> [total, setTotal]     = <span class="fn">useState</span>(TOTAL);
+  <span class="kw">const</span> [remaining, setLeft]  = <span class="fn">useState</span>(TOTAL);
+  <span class="kw">const</span> [running, setRunning] = <span class="fn">useState</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> intervalRef = <span class="fn">useRef</span>(<span class="kw">null</span>);
+
+  <span class="fn">useEffect</span>(() =&gt; {
+    <span class="kw">if</span> (running) {
+      intervalRef.current = <span class="fn">setInterval</span>(() =&gt; {
+        <span class="fn">setLeft</span>(prev =&gt; {
+          <span class="kw">if</span> (prev &lt;= <span class="nu">1</span>) {
+            <span class="fn">clearInterval</span>(intervalRef.current);
+            <span class="fn">setRunning</span>(<span class="kw">false</span>);
+            <span class="cm">// Вібрація та звук коли таймер досяг нуля</span>
+            Vibration.<span class="fn">vibrate</span>([<span class="nu">500</span>, <span class="nu">200</span>, <span class="nu">500</span>]);
+            <span class="kw">return</span> <span class="nu">0</span>;
+          }
+          <span class="kw">return</span> prev - <span class="nu">1</span>;
+        });
+      }, <span class="nu">10</span>); <span class="cm">// кожні 10мс = 0.01 сек</span>
+    } <span class="kw">else</span> {
+      <span class="fn">clearInterval</span>(intervalRef.current);
+    }
+    <span class="kw">return</span> () =&gt; <span class="fn">clearInterval</span>(intervalRef.current);
+  }, [running]);
+
+  <span class="kw">const</span> <span class="fn">start</span>  = () =&gt; <span class="fn">setRunning</span>(<span class="kw">true</span>);
+  <span class="kw">const</span> <span class="fn">pause</span>  = () =&gt; <span class="fn">setRunning</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> <span class="fn">reset</span>  = () =&gt; { <span class="fn">setRunning</span>(<span class="kw">false</span>); <span class="fn">setLeft</span>(total); };
+  <span class="kw">const</span> <span class="fn">setStart</span> = (mins) =&gt; {
+    <span class="kw">const</span> t = mins * <span class="nu">60</span> * <span class="nu">100</span>;
+    <span class="fn">setTotal</span>(t); <span class="fn">setLeft</span>(t); <span class="fn">setRunning</span>(<span class="kw">false</span>);
+  };
+
+  <span class="cm">// Форматування: MM:SS</span>
+  <span class="kw">const</span> secs    = Math.<span class="fn">floor</span>(remaining / <span class="nu">100</span>);
+  <span class="kw">const</span> ms      = remaining % <span class="nu">100</span>;
+  <span class="kw">const</span> minutes = Math.<span class="fn">floor</span>(secs / <span class="nu">60</span>);
+  <span class="kw">const</span> seconds = secs % <span class="nu">60</span>;
+  <span class="kw">const</span> display = `${<span class="fn">String</span>(minutes).<span class="fn">padStart</span>(<span class="nu">2</span>,<span class="st">'0'</span>)}:${<span class="fn">String</span>(seconds).<span class="fn">padStart</span>(<span class="nu">2</span>,<span class="st">'0'</span>)}`;
+  <span class="kw">const</span> progress = remaining / total;
+
+  <span class="kw">return</span> { display, ms, running, progress, start, pause, reset, setStart };
+}</div>
+<div id="c2-1" class="cf"><span class="cm">// components/TimerFace.js</span>
+<span class="kw">import</span> React, { useEffect, useRef } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, Animated, StyleSheet } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> Svg, { Circle } <span class="kw">from</span> <span class="st">'react-native-svg'</span>;
+
+<span class="kw">const</span> R = <span class="nu">68</span>;
+<span class="kw">const</span> CIRCUM = <span class="nu">2</span> * Math.PI * R; <span class="cm">// ≈ 427</span>
+
+<span class="kw">export default function</span> <span class="fn">TimerFace</span>({ display, ms, progress, finished }) {
+  <span class="cm">// Анімація кольору кола: синій → червоний при закінченні</span>
+  <span class="kw">const</span> colorAnim = <span class="fn">useRef</span>(<span class="kw">new</span> Animated.<span class="fn">Value</span>(<span class="nu">0</span>)).<span class="fn">current</span>;
+  <span class="fn">useEffect</span>(() =&gt; {
+    Animated.<span class="fn">timing</span>(colorAnim, {
+      toValue: finished ? <span class="nu">1</span> : <span class="nu">0</span>,
+      duration: <span class="nu">500</span>, useNativeDriver: <span class="kw">false</span>
+    }).<span class="fn">start</span>();
+  }, [finished]);
+
+  <span class="kw">const</span> strokeDashoffset = CIRCUM * (<span class="nu">1</span> - progress);
+  <span class="kw">const</span> color = colorAnim.<span class="fn">interpolate</span>({
+    inputRange:  [<span class="nu">0</span>, <span class="nu">1</span>],
+    outputRange: [<span class="st">'#6C63FF'</span>, <span class="st">'#e74c3c'</span>],
+  });
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.face}&gt;
+      &lt;Svg width={<span class="nu">160</span>} height={<span class="nu">160</span>} style={styles.ring}&gt;
+        &lt;Circle cx=<span class="nu">80</span> cy=<span class="nu">80</span> r={R} stroke=<span class="st">"#e8e8f0"</span> strokeWidth=<span class="nu">6</span> fill=<span class="st">"none"</span>/&gt;
+        &lt;Circle cx=<span class="nu">80</span> cy=<span class="nu">80</span> r={R}
+          stroke={<span class="st">"#6C63FF"</span>}
+          strokeWidth=<span class="nu">6</span> fill=<span class="st">"none"</span>
+          strokeLinecap=<span class="st">"round"</span>
+          strokeDasharray={CIRCUM}
+          strokeDashoffset={strokeDashoffset}
+        /&gt;
+      &lt;/Svg&gt;
+      &lt;Text style={styles.time}&gt;{display}&lt;/Text&gt;
+      &lt;Text style={styles.ms}&gt;.{<span class="fn">String</span>(ms).<span class="fn">padStart</span>(<span class="nu">2</span>, <span class="st">'0'</span>)}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</div>
+<div id="c2-2" class="cf"><span class="cm">// App.js</span>
+<span class="kw">import</span> React, { useState } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TouchableOpacity,
+         TextInput, StyleSheet, Alert } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> { useTimer } <span class="kw">from</span> <span class="st">'./hooks/useTimer'</span>;
+<span class="kw">import</span> TimerFace <span class="kw">from</span> <span class="st">'./components/TimerFace'</span>;
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [startMins, setStartMins] = <span class="fn">useState</span>(<span class="st">'5'</span>);
+  <span class="kw">const</span> { display, ms, running, progress,
+          start, pause, reset, setStart } = <span class="fn">useTimer</span>(<span class="nu">5</span>);
+
+  <span class="kw">const</span> finished = display === <span class="st">'00:00'</span>;
+
+  <span class="cm">// Сповіщення коли таймер досягає нуля</span>
+  <span class="fn">useEffect</span>(() =&gt; {
+    <span class="kw">if</span> (finished) {
+      <span class="fn">Alert.alert</span>(<span class="st">'⏰ Час вийшов!'</span>, <span class="st">'Таймер завершено'</span>);
+    }
+  }, [finished]);
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={styles.label}&gt;
+        {running ? <span class="st">'⏳ Відлік...'</span>
+         : finished ? <span class="st">'🔔 Час вийшов!'</span>
+         : <span class="st">'Готовий до старту'</span>}
+      &lt;/Text&gt;
+
+      &lt;TimerFace
+        display={display} ms={ms}
+        progress={progress} finished={finished}
+      /&gt;
+
+      &lt;View style={styles.btnRow}&gt;
+        &lt;TouchableOpacity
+          style={[styles.btn, styles.primary]}
+          onPress={running ? <span class="fn">pause</span> : <span class="fn">start</span>}
+        &gt;
+          &lt;Text style={styles.btnText}&gt;
+            {running ? <span class="st">'⏸ Пауза'</span> : <span class="st">'▶ Старт'</span>}
+          &lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+
+        &lt;TouchableOpacity style={[styles.btn, styles.secondary]} onPress={<span class="fn">reset</span>}&gt;
+          &lt;Text&gt;↺ Скидання&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+
+      &lt;View style={styles.setRow}&gt;
+        &lt;Text style={styles.setLabel}&gt;Хвилин:&lt;/Text&gt;
+        &lt;TextInput
+          style={styles.setInput}
+          value={startMins}
+          keyboardType=<span class="st">"number-pad"</span>
+          onChangeText={<span class="fn">setStartMins</span>}
+          onBlur={() =&gt; <span class="fn">setStart</span>(<span class="fn">Number</span>(startMins) || <span class="nu">1</span>)}
+        /&gt;
+      &lt;/View&gt;
+    &lt;/View&gt;
+  );
+}</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 4. THEME ══ -->
+<div id="mp3" class="panel">
+  <div class="pw"><div class="plbl">Превʼю</div>
+    <div class="phone"><div class="notch"></div>
+      <div class="screen" id="th_screen" style="background:#f0f0f8">
+        <div class="sbar" id="th_sbar" style="background:#fff;color:#999"><span>9:41</span><span>🔋</span></div>
+        <div id="th_header" style="background:#6C63FF;padding:12px 14px 16px">
+          <div style="color:#fff;font-size:13px;font-weight:700">🎨 Теми оформлення</div>
+          <div style="color:rgba(255,255,255,.7);font-size:10px;margin-top:2px">Персоналізуй свій інтерфейс</div>
+        </div>
+        <div style="padding:12px;display:flex;flex-direction:column;gap:8px;flex:1">
+          <div class="th-card" id="th_card1">
+            <div class="th-ctitle" id="th_ct1" style="color:#1a1a2e">👋 Вітаємо!</div>
+            <div class="th-cbody" id="th_cb1" style="color:#888">Це картка з контентом. Вона адаптується до поточної теми через контекст.</div>
+          </div>
+          <div class="th-card" id="th_card2">
+            <div class="th-ctitle" id="th_ct2" style="color:#1a1a2e">📊 Статистика</div>
+            <div style="display:flex;justify-content:space-around;margin-top:8px">
+              <div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#6C63FF">42</div><div style="font-size:9px;color:#aaa">Завдань</div></div>
+              <div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#6C63FF">89%</div><div style="font-size:9px;color:#aaa">Виконано</div></div>
+              <div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#6C63FF">7</div><div style="font-size:9px;color:#aaa">Днів</div></div>
+            </div>
+          </div>
+          <div class="th-row" style="background:#fff;border-radius:12px;padding:10px 12px;box-shadow:0 1px 4px rgba(0,0,0,.06)" id="th_togglerow">
+            <div><div class="th-lbl" id="th_lbl" style="color:#1a1a2e">Темна тема</div><div style="font-size:10px;color:#aaa" id="th_saved">💾 Збережено</div></div>
+            <button class="th-pill" id="th_pill" style="background:#e0e0e0" onclick="thToggle()">
+              <div class="th-knob" id="th_knob" style="left:3px"></div>
+            </button>
+          </div>
+          <button class="th-toggle" id="th_btn" style="background:#1a1a2e;color:#fff" onclick="thToggle()">🌙 Увімкнути темну тему</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cw">
+    <div class="ctabs">
+      <button class="ct active" onclick="SC(3,0)">ThemeContext.js</button>
+      <button class="ct" onclick="SC(3,1)">themes.js</button>
+      <button class="ct" onclick="SC(3,2)">ThemedCard.js</button>
+      <button class="ct" onclick="SC(3,3)">App.js</button>
+    </div>
+    <div class="cb">
+<div id="c3-0" class="cf active"><span class="cm">// context/ThemeContext.js</span>
+<span class="kw">import</span> React, { createContext, useContext,
+                 useState, useEffect } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> AsyncStorage <span class="kw">from</span> <span class="st">'@react-native-async-storage/async-storage'</span>;
+<span class="kw">import</span> { lightTheme, darkTheme } <span class="kw">from</span> <span class="st">'./themes'</span>;
+
+<span class="kw">const</span> ThemeCtx = <span class="fn">createContext</span>(<span class="kw">null</span>);
+
+<span class="kw">export function</span> <span class="fn">ThemeProvider</span>({ children }) {
+  <span class="kw">const</span> [isDark, setIsDark] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="cm">// Відновити тему після перезапуску</span>
+  <span class="fn">useEffect</span>(() =&gt; {
+    AsyncStorage.<span class="fn">getItem</span>(<span class="st">'@theme'</span>).<span class="fn">then</span>(v =&gt; {
+      <span class="kw">if</span> (v === <span class="st">'dark'</span>) <span class="fn">setIsDark</span>(<span class="kw">true</span>);
+    });
+  }, []);
+
+  <span class="kw">const</span> <span class="fn">toggle</span> = () =&gt; {
+    <span class="fn">setIsDark</span>(prev =&gt; {
+      <span class="kw">const</span> next = !prev;
+      <span class="cm">// Зберегти вибір — залишиться після перезапуску</span>
+      AsyncStorage.<span class="fn">setItem</span>(<span class="st">'@theme'</span>, next ? <span class="st">'dark'</span> : <span class="st">'light'</span>);
+      <span class="kw">return</span> next;
+    });
+  };
+
+  <span class="kw">return</span> (
+    &lt;ThemeCtx.Provider value={{
+      theme: isDark ? darkTheme : lightTheme,
+      isDark, toggle,
+    }}&gt;
+      {children}
+    &lt;/ThemeCtx.Provider&gt;
+  );
+}
+
+<span class="kw">export const</span> <span class="fn">useTheme</span> = () =&gt; <span class="fn">useContext</span>(ThemeCtx);</div>
+<div id="c3-1" class="cf"><span class="cm">// context/themes.js</span>
+<span class="kw">export const</span> lightTheme = {
+  background: <span class="st">'#F0F0F8'</span>,
+  surface:    <span class="st">'#FFFFFF'</span>,
+  primary:    <span class="st">'#6C63FF'</span>,
+  textMain:   <span class="st">'#1A1A2E'</span>,
+  textMuted:  <span class="st">'#888888'</span>,
+  border:     <span class="st">'#EBEBF0'</span>,
+  toggleBg:   <span class="st">'#1A1A2E'</span>,
+  toggleText: <span class="st">'#FFFFFF'</span>,
+  label:      <span class="st">'🌙 Увімкнути темну тему'</span>,
+  pill:       <span class="st">'#E0E0E0'</span>,
+  isDark:      <span class="kw">false</span>,
+};
+
+<span class="kw">export const</span> darkTheme = {
+  background: <span class="st">'#0F0F1A'</span>,
+  surface:    <span class="st">'#1E1E2E'</span>,
+  primary:    <span class="st">'#9B8FFF'</span>,
+  textMain:   <span class="st">'#EAEAEA'</span>,
+  textMuted:  <span class="st">'#666680'</span>,
+  border:     <span class="st">'#2A2A3E'</span>,
+  toggleBg:   <span class="st">'#E2E2E2'</span>,
+  toggleText: <span class="st">'#111111'</span>,
+  label:      <span class="st">'☀️ Увімкнути світлу тему'</span>,
+  pill:       <span class="st">'#6C63FF'</span>,
+  isDark:      <span class="kw">true</span>,
+};
+
+<span class="cm">/*
+  Плавна зміна стилів у React Native досягається через:
+  
+  1. Animated.timing + interpolate — кольори
+     const bgColor = anim.interpolate({
+       inputRange:  [0, 1],
+       outputRange: ['#F0F0F8', '#0F0F1A']
+     });
+  
+  2. CSS transition (тільки для Web/Expo Web):
+     style={{ transition: 'background 0.4s' }}
+  
+  3. useAnimatedStyle (Reanimated 2):
+     const style = useAnimatedStyle(() => ({
+       backgroundColor: withTiming(isDark ? '#0F0F1A' : '#F0F0F8')
+     }));
+*/</span></div>
+<div id="c3-2" class="cf"><span class="cm">// components/ThemedCard.js</span>
+<span class="kw">import</span> React, { useRef, useEffect } <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, Animated, StyleSheet } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> { useTheme } <span class="kw">from</span> <span class="st">'../context/ThemeContext'</span>;
+
+<span class="kw">export default function</span> <span class="fn">ThemedCard</span>({ title, children }) {
+  <span class="kw">const</span> { theme, isDark } = <span class="fn">useTheme</span>();
+
+  <span class="cm">// Animated.Value для плавного переходу фону</span>
+  <span class="kw">const</span> bgAnim = <span class="fn">useRef</span>(<span class="kw">new</span> Animated.<span class="fn">Value</span>(<span class="nu">0</span>)).<span class="fn">current</span>;
+
+  <span class="fn">useEffect</span>(() =&gt; {
+    Animated.<span class="fn">timing</span>(bgAnim, {
+      toValue: isDark ? <span class="nu">1</span> : <span class="nu">0</span>,
+      duration: <span class="nu">400</span>,
+      useNativeDriver: <span class="kw">false</span>, <span class="cm">// потрібен для кольорів</span>
+    }).<span class="fn">start</span>();
+  }, [isDark]);
+
+  <span class="kw">const</span> animatedBg = bgAnim.<span class="fn">interpolate</span>({
+    inputRange:  [<span class="nu">0</span>, <span class="nu">1</span>],
+    outputRange: [<span class="st">'#FFFFFF'</span>, <span class="st">'#1E1E2E'</span>],
+  });
+
+  <span class="kw">return</span> (
+    &lt;Animated.View style={[styles.card,
+      { backgroundColor: animatedBg,
+        borderColor: theme.border }]}&gt;
+      &lt;Text style={[styles.title, { color: theme.textMain }]}&gt;
+        {title}
+      &lt;/Text&gt;
+      {children}
+    &lt;/Animated.View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  card: {
+    borderRadius: <span class="nu">14</span>, padding: <span class="nu">14</span>,
+    borderWidth: <span class="nu">0.5</span>, marginBottom: <span class="nu">10</span>,
+    shadowColor: <span class="st">'#000'</span>,
+    shadowOffset: { width: <span class="nu">0</span>, height: <span class="nu">2</span> },
+    shadowOpacity: <span class="nu">0.06</span>, shadowRadius: <span class="nu">6</span>,
+    elevation: <span class="nu">2</span>,
+  },
+  title: { fontSize: <span class="nu">14</span>, fontWeight: <span class="st">'700'</span>, marginBottom: <span class="nu">6</span> },
+});</div>
+<div id="c3-3" class="cf"><span class="cm">// App.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, Switch,
+         TouchableOpacity, Animated,
+         StyleSheet, SafeAreaView } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> { ThemeProvider, useTheme } <span class="kw">from</span> <span class="st">'./context/ThemeContext'</span>;
+<span class="kw">import</span> ThemedCard <span class="kw">from</span> <span class="st">'./components/ThemedCard'</span>;
+
+<span class="kw">function</span> <span class="fn">ThemeApp</span>() {
+  <span class="kw">const</span> { theme, isDark, toggle } = <span class="fn">useTheme</span>();
+
+  <span class="kw">return</span> (
+    &lt;SafeAreaView style={[styles.safe,
+      { backgroundColor: theme.background }]}&gt;
+      <span class="cm">{/* Градієнт-хедер однаковий в обох темах */}</span>
+      &lt;View style={styles.header}&gt;
+        &lt;Text style={styles.htitle}&gt;🎨 Теми оформлення&lt;/Text&gt;
+        &lt;Text style={styles.hsub}&gt;Персоналізуй свій інтерфейс&lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;View style={styles.content}&gt;
+        <span class="cm">{/* Картки отримують тему через useTheme() всередині */}</span>
+        &lt;ThemedCard title=<span class="st">"👋 Вітаємо!"</span>&gt;
+          &lt;Text style={{ color: theme.textMuted, fontSize: <span class="nu">12</span> }}&gt;
+            Це картка з контентом. Вона адаптується до теми.
+          &lt;/Text&gt;
+        &lt;/ThemedCard&gt;
+
+        &lt;ThemedCard title=<span class="st">"📊 Статистика"</span>&gt;
+          <span class="cm">{/* ... статистика */}</span>
+        &lt;/ThemedCard&gt;
+
+        <span class="cm">{/* Перемикач теми */}</span>
+        &lt;View style={[styles.toggleRow,
+          { backgroundColor: theme.surface }]}&gt;
+          &lt;View&gt;
+            &lt;Text style={[styles.toggleLabel,
+              { color: theme.textMain }]}&gt;Темна тема&lt;/Text&gt;
+            &lt;Text style={{ color: theme.textMuted, fontSize: <span class="nu">10</span> }}&gt;
+              💾 Збережено в AsyncStorage
+            &lt;/Text&gt;
+          &lt;/View&gt;
+          &lt;Switch value={isDark} onValueChange={<span class="fn">toggle</span>}
+            trackColor={{ false: <span class="st">'#E0E0E0'</span>, true: theme.primary }}
+            thumbColor=<span class="st">'#fff'</span>
+          /&gt;
+        &lt;/View&gt;
+
+        &lt;TouchableOpacity
+          style={[styles.bigBtn,
+            { backgroundColor: theme.toggleBg }]}
+          onPress={<span class="fn">toggle</span>}
+        &gt;
+          &lt;Text style={{ color: theme.toggleText, fontWeight: <span class="st">'700'</span> }}&gt;
+            {theme.label}
+          &lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> &lt;ThemeProvider&gt;&lt;ThemeApp /&gt;&lt;/ThemeProvider&gt;;
+}</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── TAB SWITCHER ──
+function ST(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  ['mp0','mp1','mp2','mp3'].forEach((id,j)=>document.getElementById(id).classList.toggle('active',i===j));
+}
+function SC(p,f){
+  const px='c'+p+'-';
+  document.querySelectorAll('[id^="'+px+'"]').forEach(e=>e.classList.remove('active'));
+  document.getElementById(px+f).classList.add('active');
+  document.querySelectorAll('#mp'+p+' .ct').forEach((t,j)=>t.classList.toggle('active',j===f));
+}
+
+// ── COUNTER ──
+let cntVal=0, cntAuto=false, cntInterval=null;
+function cntRender(){
+  document.getElementById('cnt_num').textContent=cntVal;
+  const p=Math.min(100,Math.max(0,(cntVal+50)/100*100));
+  document.getElementById('cnt_fill').style.width=p+'%';
+  document.getElementById('cnt_saved').textContent='💾 Збережено: '+cntVal;
+}
+function cntChange(d){cntVal+=d;cntRender();}
+function cntReset(){cntVal=0;cntRender();}
+function cntToggleAuto(){
+  cntAuto=!cntAuto;
+  const btn=document.getElementById('cnt_auto_btn');
+  if(cntAuto){
+    btn.textContent='⏸ Зупинити авто';btn.style.background='#e74c3c';
+    cntInterval=setInterval(()=>{cntVal++;cntRender();},1000);
+  }else{
+    btn.textContent='▶ Авто +1/сек';btn.style.background='#6C63FF';
+    clearInterval(cntInterval);
+  }
+}
+cntRender();
+
+// ── TODO ──
+let todos=[{id:1,text:'Вивчити хуки React',done:false},{id:2,text:'Зробити таймер',done:true}];
+let tdEdit=null;
+function tdRender(){
+  const done=todos.filter(t=>t.done).length;
+  document.getElementById('td_subtitle').textContent=done+' виконано з '+todos.length;
+  document.getElementById('td_stats').textContent='💾 Автозбереження: '+todos.length+' елементів';
+  document.getElementById('td_list').innerHTML=todos.map(t=>`
+    <div class="td-item${t.id===tdEdit?' td-new-flash':''}" id="ti${t.id}">
+      <div class="td-ck${t.done?' task-checked':''}" style="${t.done?'background:#6C63FF;border-color:#6C63FF;color:#fff':''}" onclick="tdToggle(${t.id})">${t.done?'✓':''}</div>
+      ${tdEdit===t.id
+        ? `<input class="td-edi" id="tde${t.id}" value="${t.text}" onkeydown="if(event.key==='Enter')tdSave(${t.id})" autofocus/>`
+        : `<span class="td-txt" style="${t.done?'text-decoration:line-through;opacity:.5':''}">${t.text}</span>`}
+      ${tdEdit===t.id
+        ? `<button class="td-edit-btn" onclick="tdSave(${t.id})">✓</button>`
+        : `<button class="td-edit-btn" onclick="tdStartEdit(${t.id})">✏️</button>`}
+      <button class="td-del" onclick="tdDel(${t.id})">✕</button>
+    </div>`).join('');
+  if(tdEdit){setTimeout(()=>{const el=document.getElementById('tde'+tdEdit);if(el){el.focus();el.select();}},50);}
+}
+function tdAdd(){
+  const v=document.getElementById('td_inp').value.trim();
+  if(!v)return;
+  todos.push({id:Date.now(),text:v,done:false});
+  document.getElementById('td_inp').value='';
+  tdRender();tdToast('✅ Справу додано');
+}
+function tdToggle(id){todos=todos.map(t=>t.id===id?{...t,done:!t.done}:t);tdRender();}
+function tdStartEdit(id){tdEdit=id;tdRender();}
+function tdSave(id){
+  const el=document.getElementById('tde'+id);
+  if(el)todos=todos.map(t=>t.id===id?{...t,text:el.value}:t);
+  tdEdit=null;tdRender();tdToast('✏️ Справу оновлено');
+}
+function tdDel(id){todos=todos.filter(t=>t.id!==id);tdRender();tdToast('🗑 Справу видалено');}
+function tdToast(msg){
+  const el=document.getElementById('td_toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2000);
+}
+tdRender();
+
+// ── TIMER ──
+let tmTotal=300*100, tmLeft=300*100, tmRunning=false, tmInterval=null;
+function tmFmt(){
+  const s=Math.floor(tmLeft/100),ms=tmLeft%100;
+  const m=Math.floor(s/60),sc=s%60;
+  return {d:String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0'),ms:String(ms).padStart(2,'0')};
+}
+function tmRender(){
+  const {d,ms}=tmFmt();
+  document.getElementById('tm_display').textContent=d;
+  document.getElementById('tm_ms').textContent='.'+ms;
+  const prog=tmLeft/tmTotal;
+  const circum=2*Math.PI*68;
+  document.getElementById('tm_arc').setAttribute('stroke-dashoffset',circum*(1-prog));
+  const finished=tmLeft<=0;
+  document.getElementById('tm_arc').setAttribute('stroke',finished?'#e74c3c':'#6C63FF');
+  document.getElementById('tm_label').textContent=tmRunning?'⏳ Відлік...':finished?'🔔 Час вийшов!':'Готовий до старту';
+  document.getElementById('tm_start').textContent=tmRunning?'⏸ Пауза':'▶ Старт';
+  document.getElementById('tm_start').style.background=tmRunning?'#e74c3c':'#6C63FF';
+}
+function tmStart(){
+  if(tmLeft<=0)return;
+  tmRunning=!tmRunning;
+  if(tmRunning){
+    tmInterval=setInterval(()=>{
+      tmLeft--;tmRender();
+      if(tmLeft<=0){clearInterval(tmInterval);tmRunning=false;}
+    },10);
+  }else{clearInterval(tmInterval);}
+  tmRender();
+}
+function tmReset(){clearInterval(tmInterval);tmRunning=false;tmLeft=tmTotal;tmRender();}
+function tmSetStart(){
+  const v=parseInt(document.getElementById('tm_setinp').value)||5;
+  tmTotal=v*60*100;tmLeft=tmTotal;clearInterval(tmInterval);tmRunning=false;tmRender();
+}
+tmRender();
+
+// ── THEME ──
+let thDark=false;
+const TH={
+  light:{bg:'#f0f0f8',surf:'#fff',txt:'#1a1a2e',mut:'#888',pill:'#e0e0e0',knob:3,btn:'#1a1a2e',btntxt:'#fff',lbl:'🌙 Увімкнути темну тему',sbartxt:'#999',sbar:'#fff'},
+  dark:{bg:'#0f0f1a',surf:'#1e1e2e',txt:'#eaeaea',mut:'#666',pill:'#6C63FF',knob:23,btn:'#e2e2e2',btntxt:'#111',lbl:'☀️ Увімкнути світлу тему',sbartxt:'rgba(255,255,255,.7)',sbar:'#1e1e2e'}
+};
+function thApply(){
+  const t=thDark?TH.dark:TH.light;
+  const set=(id,prop,val)=>{const el=document.getElementById(id);if(el)el.style[prop]=val;};
+  document.getElementById('th_screen').style.background=t.bg;
+  set('th_sbar','background',t.sbar);document.getElementById('th_sbar').style.color=t.sbartxt;
+  set('th_card1','background',t.surf);set('th_card1','borderColor',t.surf==='#fff'?'#eee':'#2a2a3e');
+  set('th_ct1','color',t.txt);set('th_cb1','color',t.mut);
+  set('th_card2','background',t.surf);set('th_ct2','color',t.txt);
+  set('th_togglerow','background',t.surf);set('th_lbl','color',t.txt);
+  document.getElementById('th_pill').style.background=t.pill;
+  document.getElementById('th_knob').style.left=t.knob+'px';
+  document.getElementById('th_btn').style.background=t.btn;
+  document.getElementById('th_btn').style.color=t.btntxt;
+  document.getElementById('th_btn').textContent=t.lbl;
+}
+function thToggle(){thDark=!thDark;thApply();}
+thApply();
+</script>
