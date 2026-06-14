@@ -1,0 +1,847 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.tabs{display:flex;border-bottom:1px solid var(--color-border-tertiary);overflow-x:auto}
+.tab{padding:9px 15px;font-size:12px;cursor:pointer;border:none;background:none;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;flex-shrink:0}
+.tab.active{color:var(--color-text-primary);border-bottom-color:#6C63FF;font-weight:600}
+.panel{display:none;flex-direction:row;gap:22px;padding:16px 0}
+.panel.active{display:flex}
+/* phone */
+.pw{flex:0 0 200px}
+.plbl{font-size:10px;color:#aaa;text-align:center;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
+.phone{background:#16162a;border-radius:32px;padding:10px;border:2.5px solid #2a2a45;box-shadow:0 8px 28px rgba(0,0,0,.32)}
+.notch{width:56px;height:7px;background:#2a2a45;border-radius:4px;margin:0 auto 7px}
+.screen{border-radius:20px;overflow:hidden;height:460px;display:flex;flex-direction:column;background:#f0f0f8;position:relative}
+/* code */
+.cw{flex:1;min-width:0}
+.ctabs{display:flex;flex-wrap:wrap;border-bottom:.5px solid var(--color-border-tertiary);margin-bottom:7px}
+.ct{padding:5px 12px;font-size:10.2px;cursor:pointer;border:none;background:none;color:var(--color-text-tertiary);border-bottom:2px solid transparent;margin-bottom:-.5px;white-space:nowrap}
+.ct.active{color:var(--color-text-primary);border-bottom-color:#6C63FF;font-weight:500}
+.cb{background:var(--color-background-secondary);border-radius:10px;border:.5px solid var(--color-border-tertiary);padding:13px;font-family:var(--font-mono);font-size:10.1px;line-height:1.7;overflow:auto;max-height:430px;white-space:pre}
+.cf{display:none}.cf.active{display:block}
+.kw{color:#9B8FFF}.st{color:#1D9E75}.fn{color:#2176AE}.cm{color:#888;font-style:italic}.nu{color:#D85A30}
+
+/* ── Shared nav UI ── */
+.nav-bar{background:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:.5px solid #eee;min-height:44px}
+.nav-hamburger{font-size:18px;cursor:pointer;border:none;background:none;padding:2px;line-height:1}
+.nav-back{font-size:15px;cursor:pointer;border:none;background:none;padding:2px;color:#6C63FF;font-weight:700}
+.nav-title{font-size:13px;font-weight:700;color:#1a1a2e;flex:1}
+.nav-menu-icon{font-size:18px;cursor:pointer;border:none;background:none;padding:2px;margin-left:auto}
+.page{flex:1;overflow-y:auto;padding:12px}
+.page-title{font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:8px}
+.page-sub{font-size:11px;color:#888;margin-bottom:12px}
+.card{background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card-title{font-size:12px;font-weight:700;color:#1a1a2e;margin-bottom:3px}
+.card-body{font-size:10px;color:#888}
+.sim-btn{border:none;border-radius:9px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;width:100%;margin-top:6px}
+.avatar-circle{width:52px;height:52px;border-radius:26px;background:linear-gradient(135deg,#6C63FF,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 8px}
+
+/* ── Drawer overlay ── */
+.drawer{position:absolute;top:0;left:-200px;width:190px;height:100%;background:#fff;z-index:10;transition:left .28s cubic-bezier(.4,0,.2,1);box-shadow:4px 0 20px rgba(0,0,0,.12);display:flex;flex-direction:column}
+.drawer.open{left:0}
+.drawer-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.35);z-index:9;opacity:0;pointer-events:none;transition:opacity .28s}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer-header{background:linear-gradient(160deg,#6C63FF,#a78bfa);padding:20px 14px 16px;display:flex;flex-direction:column;align-items:center}
+.drawer-av{width:56px;height:56px;border-radius:28px;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:8px}
+.drawer-name{color:#fff;font-size:13px;font-weight:700}
+.drawer-email{color:rgba(255,255,255,.75);font-size:10px;margin-top:2px}
+.drawer-items{flex:1;padding:8px 0}
+.drawer-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .15s}
+.drawer-item:hover{background:#f5f5ff}
+.drawer-item.active{background:#f0f0ff}
+.drawer-icon{font-size:17px;width:24px;text-align:center}
+.drawer-label{font-size:12px;font-weight:600;color:#1a1a2e}
+.drawer-label.active-lbl{color:#6C63FF}
+.drawer-divider{height:.5px;background:#eee;margin:4px 14px}
+.drawer-footer{padding:12px 14px}
+.drawer-logout{width:100%;border:1.5px solid #e74c3c;border-radius:10px;padding:9px;background:none;color:#e74c3c;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+
+/* ── Alert ── */
+.sim-alert{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:20;display:none;align-items:center;justify-content:center}
+.sim-alert.show{display:flex}
+.sim-alert-box{background:#fff;border-radius:16px;padding:20px;margin:16px;width:100%}
+.sim-alert-title{font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px;text-align:center}
+.sim-alert-body{font-size:11px;color:#888;text-align:center;margin-bottom:16px}
+.sim-alert-btn{width:100%;border:none;border-radius:10px;padding:10px;background:#6C63FF;color:#fff;font-size:12px;font-weight:700;cursor:pointer}
+
+/* ── Stack breadcrumb ── */
+.breadcrumb{display:flex;align-items:center;gap:4px;padding:4px 14px 6px;background:#f8f8ff;border-bottom:.5px solid #eee;font-size:9px;color:#aaa}
+.bc-sep{color:#ccc}
+.bc-active{color:#6C63FF;font-weight:600}
+
+/* ── User list ── */
+.user-item{background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.06);border:none;width:100%;text-align:left;transition:transform .1s}
+.user-item:active{transform:scale(.98)}
+.user-av{width:36px;height:36px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.user-name{font-size:12px;font-weight:700;color:#1a1a2e}
+.user-role{font-size:10px;color:#aaa}
+.user-arrow{color:#ccc;font-size:14px;margin-left:auto}
+</style>
+
+<div class="tabs">
+  <button class="tab active" onclick="ST(0)">1. Кастомний Drawer</button>
+  <button class="tab" onclick="ST(1)">2. Drawer + Stack</button>
+  <button class="tab" onclick="ST(2)">3. Передача параметрів</button>
+</div>
+
+<!-- ══════════════════ TASK 1 ══════════════════ -->
+<div id="mp0" class="panel active">
+  <div class="pw"><div class="plbl">Превʼю · натисни ☰</div>
+    <div class="phone"><div class="notch"></div>
+      <div class="screen" id="s1">
+        <!-- Drawer overlay -->
+        <div class="drawer-overlay" id="d1_ov" onclick="closeDrawer(1)"></div>
+        <!-- Drawer -->
+        <div class="drawer" id="d1">
+          <div class="drawer-header">
+            <div class="drawer-av">🧑‍💻</div>
+            <div class="drawer-name">Олексій Петренко</div>
+            <div class="drawer-email">oleksii@example.com</div>
+          </div>
+          <div class="drawer-items">
+            <button class="drawer-item active" onclick="d1Nav('home')">
+              <span class="drawer-icon">🏠</span>
+              <span class="drawer-label active-lbl" id="d1l_home">Головна</span>
+            </button>
+            <button class="drawer-item" onclick="d1Nav('profile')">
+              <span class="drawer-icon">👤</span>
+              <span class="drawer-label" id="d1l_profile">Профіль</span>
+            </button>
+          </div>
+          <div class="drawer-divider"></div>
+          <div class="drawer-footer">
+            <button class="drawer-logout" onclick="showAlert(1)">🚪 Вийти</button>
+          </div>
+        </div>
+        <!-- NavBar -->
+        <div class="nav-bar">
+          <button class="nav-hamburger" onclick="openDrawer(1)">☰</button>
+          <span class="nav-title" id="d1_title">🏠 Головна</span>
+        </div>
+        <!-- Pages -->
+        <div class="page" id="d1_home">
+          <div class="page-title">Ласкаво просимо!</div>
+          <div class="page-sub">Натисни ☰ щоб відкрити меню</div>
+          <div class="card"><div class="card-title">📱 Drawer Navigation</div><div class="card-body">Бічне меню з аватаром, ім'ям та кнопкою виходу.</div></div>
+          <div class="card"><div class="card-title">🎨 Кастомний Drawer</div><div class="card-body">Повністю налаштований вигляд через DrawerContent.</div></div>
+        </div>
+        <div class="page" id="d1_profile" style="display:none">
+          <div class="avatar-circle" style="margin-top:12px">🧑‍💻</div>
+          <div style="text-align:center;margin-bottom:12px">
+            <div class="page-title" style="text-align:center">Олексій Петренко</div>
+            <div class="page-sub" style="text-align:center">React Native Developer</div>
+          </div>
+          <div class="card"><div class="card-title">📧 Email</div><div class="card-body">oleksii@example.com</div></div>
+          <div class="card"><div class="card-title">📍 Місто</div><div class="card-body">Київ, Україна</div></div>
+        </div>
+        <!-- Alert -->
+        <div class="sim-alert" id="alert1">
+          <div class="sim-alert-box">
+            <div class="sim-alert-title">👋 До побачення!</div>
+            <div class="sim-alert-body">Ви натиснули "Вийти". В реальному застосунку тут відбувся б logout та перехід на екран входу.</div>
+            <button class="sim-alert-btn" onclick="hideAlert(1)">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cw">
+    <div class="ctabs">
+      <button class="ct active" onclick="SC(0,0)">CustomDrawer.js</button>
+      <button class="ct" onclick="SC(0,1)">HomeScreen.js</button>
+      <button class="ct" onclick="SC(0,2)">App.js</button>
+    </div>
+    <div class="cb">
+<div id="c0-0" class="cf active"><span class="cm">// components/CustomDrawer.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, Image, TouchableOpacity,
+         StyleSheet, Alert } <span class="kw">from</span> <span class="st">'react-native'</span>;
+<span class="kw">import</span> { DrawerContentScrollView,
+         DrawerItemList } <span class="kw">from</span> <span class="st">'@react-navigation/drawer'</span>;
+<span class="kw">import</span> { LinearGradient } <span class="kw">from</span> <span class="st">'expo-linear-gradient'</span>;
+
+<span class="kw">export default function</span> <span class="fn">CustomDrawer</span>(props) {
+  <span class="kw">const</span> <span class="fn">handleLogout</span> = () =&gt; {
+    <span class="fn">Alert.alert</span>(
+      <span class="st">'👋 До побачення!'</span>,
+      <span class="st">'Ви впевнені, що хочете вийти?'</span>,
+      [
+        { text: <span class="st">'Скасувати'</span>, style: <span class="st">'cancel'</span> },
+        { text: <span class="st">'Вийти'</span>, style: <span class="st">'destructive'</span>,
+          onPress: () =&gt; <span class="cm">/* navigation.replace('Login') */</span> {} },
+      ]
+    );
+  };
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.root}&gt;
+      <span class="cm">{/* Градієнтна шапка з аватаром */}</span>
+      &lt;LinearGradient
+        colors={[<span class="st">'#6C63FF'</span>, <span class="st">'#a78bfa'</span>]}
+        style={styles.header}
+      &gt;
+        &lt;Image
+          source={{ uri: <span class="st">'https://i.pravatar.cc/100'</span> }}
+          style={styles.avatar}
+        /&gt;
+        &lt;Text style={styles.name}&gt;Олексій Петренко&lt;/Text&gt;
+        &lt;Text style={styles.email}&gt;oleksii@example.com&lt;/Text&gt;
+      &lt;/LinearGradient&gt;
+
+      <span class="cm">{/* Стандартні пункти меню з пропсів */}</span>
+      &lt;DrawerContentScrollView {...props} style={styles.items}&gt;
+        &lt;DrawerItemList {...props} /&gt;
+      &lt;/DrawerContentScrollView&gt;
+
+      <span class="cm">{/* Кнопка "Вийти" завжди внизу */}</span>
+      &lt;View style={styles.footer}&gt;
+        &lt;TouchableOpacity
+          style={styles.logoutBtn}
+          onPress={<span class="fn">handleLogout</span>}
+        &gt;
+          &lt;Text style={styles.logoutText}&gt;🚪 Вийти&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  root:   { flex: <span class="nu">1</span> },
+  header: { padding: <span class="nu">24</span>, paddingTop: <span class="nu">48</span>, alignItems: <span class="st">'center'</span> },
+  avatar: {
+    width: <span class="nu">72</span>, height: <span class="nu">72</span>, borderRadius: <span class="nu">36</span>,
+    borderWidth: <span class="nu">2</span>, borderColor: <span class="st">'rgba(255,255,255,.6)'</span>,
+    marginBottom: <span class="nu">10</span>,
+  },
+  name:      { color: <span class="st">'#fff'</span>, fontSize: <span class="nu">16</span>, fontWeight: <span class="st">'700'</span> },
+  email:     { color: <span class="st">'rgba(255,255,255,.75)'</span>, fontSize: <span class="nu">12</span>, marginTop: <span class="nu">2</span> },
+  items:     { flex: <span class="nu">1</span> },
+  footer:    { padding: <span class="nu">16</span> },
+  logoutBtn: {
+    borderWidth: <span class="nu">1.5</span>, borderColor: <span class="st">'#e74c3c'</span>,
+    borderRadius: <span class="nu">10</span>, padding: <span class="nu">12</span>,
+    alignItems: <span class="st">'center'</span>,
+  },
+  logoutText: { color: <span class="st">'#e74c3c'</span>, fontWeight: <span class="st">'700'</span>, fontSize: <span class="nu">14</span> },
+});</div>
+<div id="c0-1" class="cf"><span class="cm">// screens/HomeScreen.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TouchableOpacity,
+         StyleSheet } <span class="kw">from</span> <span class="st">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">HomeScreen</span>({ navigation }) {
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={styles.title}&gt;🏠 Головна&lt;/Text&gt;
+      &lt;Text style={styles.sub}&gt;
+        Натисніть ☰ щоб відкрити меню
+      &lt;/Text&gt;
+
+      &lt;View style={styles.card}&gt;
+        &lt;Text style={styles.cardTitle}&gt;📱 Drawer Navigation&lt;/Text&gt;
+        &lt;Text style={styles.cardBody}&gt;
+          Бічне меню з аватаром, ім'ям та кнопкою виходу.
+        &lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;TouchableOpacity
+        style={styles.btn}
+        onPress={() =&gt; navigation.<span class="fn">openDrawer</span>()}
+      &gt;
+        &lt;Text style={styles.btnText}&gt;☰ Відкрити меню&lt;/Text&gt;
+      &lt;/TouchableOpacity&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  container: { flex: <span class="nu">1</span>, padding: <span class="nu">20</span>, backgroundColor: <span class="st">'#f0f0f8'</span> },
+  title:     { fontSize: <span class="nu">22</span>, fontWeight: <span class="st">'700'</span>, color: <span class="st">'#1a1a2e'</span>, marginBottom: <span class="nu">6</span> },
+  sub:       { fontSize: <span class="nu">13</span>, color: <span class="st">'#888'</span>, marginBottom: <span class="nu">16</span> },
+  card: {
+    backgroundColor: <span class="st">'#fff'</span>, borderRadius: <span class="nu">14</span>,
+    padding: <span class="nu">14</span>, marginBottom: <span class="nu">10</span>, elevation: <span class="nu">2</span>,
+  },
+  cardTitle: { fontSize: <span class="nu">14</span>, fontWeight: <span class="st">'700'</span>, color: <span class="st">'#1a1a2e'</span>, marginBottom: <span class="nu">4</span> },
+  cardBody:  { fontSize: <span class="nu">12</span>, color: <span class="st">'#888'</span> },
+  btn: {
+    backgroundColor: <span class="st">'#6C63FF'</span>, borderRadius: <span class="nu">12</span>,
+    padding: <span class="nu">14</span>, alignItems: <span class="st">'center'</span>, marginTop: <span class="nu">8</span>,
+  },
+  btnText: { color: <span class="st">'#fff'</span>, fontWeight: <span class="st">'700'</span>, fontSize: <span class="nu">14</span> },
+});</div>
+<div id="c0-2" class="cf"><span class="cm">// App.js — кастомний Drawer Navigator</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { NavigationContainer } <span class="kw">from</span> <span class="st">'@react-navigation/native'</span>;
+<span class="kw">import</span> { createDrawerNavigator }
+  <span class="kw">from</span> <span class="st">'@react-navigation/drawer'</span>;
+<span class="kw">import</span> HomeScreen    <span class="kw">from</span> <span class="st">'./screens/HomeScreen'</span>;
+<span class="kw">import</span> ProfileScreen <span class="kw">from</span> <span class="st">'./screens/ProfileScreen'</span>;
+<span class="kw">import</span> CustomDrawer  <span class="kw">from</span> <span class="st">'./components/CustomDrawer'</span>;
+
+<span class="kw">const</span> Drawer = <span class="fn">createDrawerNavigator</span>();
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    &lt;NavigationContainer&gt;
+      &lt;Drawer.Navigator
+        <span class="cm">// 👇 Замінюємо стандартний Drawer кастомним</span>
+        drawerContent={(props) =&gt; &lt;CustomDrawer {...props} /&gt;}
+        screenOptions={{
+          drawerActiveTintColor:   <span class="st">'#6C63FF'</span>,
+          drawerInactiveTintColor: <span class="st">'#555'</span>,
+          drawerLabelStyle:        { fontSize: <span class="nu">14</span>, fontWeight: <span class="st">'600'</span> },
+          headerStyle:             { backgroundColor: <span class="st">'#fff'</span> },
+          headerTintColor:         <span class="st">'#1a1a2e'</span>,
+        }}
+      &gt;
+        &lt;Drawer.Screen
+          name=<span class="st">"Головна"</span>
+          component={HomeScreen}
+          options={{ drawerIcon: () =&gt; &lt;Text&gt;🏠&lt;/Text&gt; }}
+        /&gt;
+        &lt;Drawer.Screen
+          name=<span class="st">"Профіль"</span>
+          component={ProfileScreen}
+          options={{ drawerIcon: () =&gt; &lt;Text&gt;👤&lt;/Text&gt; }}
+        /&gt;
+      &lt;/Drawer.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ TASK 2 ══════════════════ -->
+<div id="mp1" class="panel">
+  <div class="pw"><div class="plbl">Превʼю · натисни ☰ або кнопки</div>
+    <div class="phone"><div class="notch"></div>
+      <div class="screen" id="s2">
+        <div class="drawer-overlay" id="d2_ov" onclick="closeDrawer(2)"></div>
+        <div class="drawer" id="d2">
+          <div class="drawer-header">
+            <div class="drawer-av">🧑‍💻</div>
+            <div class="drawer-name">Олексій Петренко</div>
+            <div class="drawer-email">oleksii@example.com</div>
+          </div>
+          <div class="drawer-items">
+            <button class="drawer-item" onclick="d2Nav('home')"><span class="drawer-icon">🏠</span><span class="drawer-label" id="d2l_home">Головна</span></button>
+            <button class="drawer-item" onclick="d2Nav('profile')"><span class="drawer-icon">👤</span><span class="drawer-label" id="d2l_profile">Профіль</span></button>
+          </div>
+          <div class="drawer-footer"><button class="drawer-logout" onclick="showAlert(2)">🚪 Вийти</button></div>
+        </div>
+        <!-- Pages -->
+        <div id="d2_home" style="display:flex;flex-direction:column;height:100%">
+          <div class="nav-bar">
+            <button class="nav-hamburger" onclick="openDrawer(2)">☰</button>
+            <span class="nav-title">🏠 Головна</span>
+          </div>
+          <div class="breadcrumb"><span class="bc-active">Головна</span></div>
+          <div class="page">
+            <div class="page-title">Головний екран</div>
+            <div class="page-sub">Stack Navigator всередині Drawer</div>
+            <div class="card"><div class="card-title">📝 Стаття 1</div><div class="card-body">Вступ до React Native Navigation</div></div>
+            <button class="sim-btn" style="background:#6C63FF;color:#fff" onclick="d2GoDetails('Стаття 1')">→ Деталі статті 1</button>
+            <div class="card" style="margin-top:8px"><div class="card-title">📝 Стаття 2</div><div class="card-body">Налаштування Drawer Navigator</div></div>
+            <button class="sim-btn" style="background:#6C63FF;color:#fff" onclick="d2GoDetails('Стаття 2')">→ Деталі статті 2</button>
+          </div>
+        </div>
+        <div id="d2_details" style="display:none;flex-direction:column;height:100%">
+          <div class="nav-bar">
+            <button class="nav-back" onclick="d2Nav('home')">← Назад</button>
+            <span class="nav-title" id="d2_det_title">Деталі</span>
+            <button class="nav-menu-icon" onclick="openDrawer(2)">☰</button>
+          </div>
+          <div class="breadcrumb"><span>Головна</span><span class="bc-sep">›</span><span class="bc-active" id="d2_bc">Деталі</span></div>
+          <div class="page">
+            <div class="page-title" id="d2_det_h">Деталі статті</div>
+            <div class="card"><div class="card-body" style="font-size:11px;line-height:1.6">Це екран деталей, відкритий через Stack Navigator всередині вкладки "Головна" Drawer'а. Кнопка ☰ у правому куті дозволяє відкрити меню з будь-якого рівня стеку.</div></div>
+            <div class="card"><div class="card-title">🔑 Ключова концепція</div><div class="card-body">navigation.getParent().openDrawer() відкриває Drawer з дочірнього Stack-екрану.</div></div>
+            <button class="sim-btn" style="background:#f0f0f8;color:#6C63FF;border:1.5px solid #6C63FF" onclick="openDrawer(2)">☰ Відкрити меню</button>
+          </div>
+        </div>
+        <div id="d2_profile" style="display:none;flex-direction:column;height:100%">
+          <div class="nav-bar">
+            <button class="nav-hamburger" onclick="openDrawer(2)">☰</button>
+            <span class="nav-title">👤 Профіль</span>
+          </div>
+          <div class="page" style="text-align:center;padding-top:20px">
+            <div class="avatar-circle">🧑‍💻</div>
+            <div class="page-title" style="text-align:center">Олексій Петренко</div>
+            <div class="card" style="text-align:left;margin-top:12px"><div class="card-title">📧 Email</div><div class="card-body">oleksii@example.com</div></div>
+          </div>
+        </div>
+        <div class="sim-alert" id="alert2">
+          <div class="sim-alert-box"><div class="sim-alert-title">👋 До побачення!</div><div class="sim-alert-body">Кнопка Вийти спрацювала!</div><button class="sim-alert-btn" onclick="hideAlert(2)">OK</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cw">
+    <div class="ctabs">
+      <button class="ct active" onclick="SC(1,0)">App.js</button>
+      <button class="ct" onclick="SC(1,1)">HomeStack.js</button>
+      <button class="ct" onclick="SC(1,2)">DetailsScreen.js</button>
+    </div>
+    <div class="cb">
+<div id="c1-0" class="cf active"><span class="cm">// App.js — Drawer + Stack комбінація</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { NavigationContainer } <span class="kw">from</span> <span class="st">'@react-navigation/native'</span>;
+<span class="kw">import</span> { createDrawerNavigator }
+  <span class="kw">from</span> <span class="st">'@react-navigation/drawer'</span>;
+<span class="kw">import</span> HomeStack      <span class="kw">from</span> <span class="st">'./navigation/HomeStack'</span>;
+<span class="kw">import</span> ProfileScreen  <span class="kw">from</span> <span class="st">'./screens/ProfileScreen'</span>;
+<span class="kw">import</span> CustomDrawer   <span class="kw">from</span> <span class="st">'./components/CustomDrawer'</span>;
+
+<span class="kw">const</span> Drawer = <span class="fn">createDrawerNavigator</span>();
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    &lt;NavigationContainer&gt;
+      &lt;Drawer.Navigator
+        drawerContent={(props) =&gt; &lt;CustomDrawer {...props} /&gt;}
+        screenOptions={{ headerShown: <span class="kw">false</span> }}
+        <span class="cm">{/* headerShown: false — хедер малює Stack */}</span>
+      &gt;
+        &lt;Drawer.Screen
+          name=<span class="st">"HomeStack"</span>       <span class="cm">// ← Stack Navigator</span>
+          component={HomeStack}
+          options={{ title: <span class="st">'Головна'</span> }}
+        /&gt;
+        &lt;Drawer.Screen
+          name=<span class="st">"Профіль"</span>
+          component={ProfileScreen}
+        /&gt;
+      &lt;/Drawer.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</div>
+<div id="c1-1" class="cf"><span class="cm">// navigation/HomeStack.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { createStackNavigator }
+  <span class="kw">from</span> <span class="st">'@react-navigation/stack'</span>;
+<span class="kw">import</span> HomeScreen    <span class="kw">from</span> <span class="st">'../screens/HomeScreen'</span>;
+<span class="kw">import</span> DetailsScreen <span class="kw">from</span> <span class="st">'../screens/DetailsScreen'</span>;
+
+<span class="kw">const</span> Stack = <span class="fn">createStackNavigator</span>();
+
+<span class="kw">export default function</span> <span class="fn">HomeStack</span>() {
+  <span class="kw">return</span> (
+    &lt;Stack.Navigator
+      screenOptions={({ navigation }) =&gt; ({
+        headerLeft: () =&gt; (
+          <span class="cm">{/* Кнопка ☰ відкриває батьківський Drawer */}</span>
+          &lt;TouchableOpacity
+            style={{ marginLeft: <span class="nu">16</span> }}
+            onPress={() =&gt; navigation.<span class="fn">getParent</span>().<span class="fn">openDrawer</span>()}
+          &gt;
+            &lt;Text style={{ fontSize: <span class="nu">22</span> }}&gt;☰&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+        ),
+        headerStyle:      { backgroundColor: <span class="st">'#fff'</span> },
+        headerTintColor:  <span class="st">'#6C63FF'</span>,
+        headerTitleStyle: { color: <span class="st">'#1a1a2e'</span> },
+      })}
+    &gt;
+      &lt;Stack.Screen name=<span class="st">"Головна"</span>  component={HomeScreen}    /&gt;
+      &lt;Stack.Screen name=<span class="st">"Деталі"</span>   component={DetailsScreen} /&gt;
+    &lt;/Stack.Navigator&gt;
+  );
+}
+
+<span class="cm">/*
+  Ієрархія навігаторів:
+  
+  NavigationContainer
+  └── DrawerNavigator        ← Drawer.Navigator
+      ├── HomeStack           ← Stack.Navigator
+      │   ├── HomeScreen
+      │   └── DetailsScreen
+      └── ProfileScreen
+*/</span></div>
+<div id="c1-2" class="cf"><span class="cm">// screens/DetailsScreen.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TouchableOpacity,
+         StyleSheet } <span class="kw">from</span> <span class="st">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">DetailsScreen</span>({ navigation, route }) {
+  <span class="kw">const</span> { title } = route.params ?? {};
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={styles.title}&gt;{title ?? <span class="st">'Деталі'</span>}&lt;/Text&gt;
+
+      &lt;View style={styles.card}&gt;
+        &lt;Text style={styles.cardBody}&gt;
+          Це екран деталей, відкритий через Stack Navigator
+          всередині вкладки "Головна" Drawer'а.
+        &lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;View style={styles.card}&gt;
+        &lt;Text style={styles.cardTitle}&gt;🔑 Ключова концепція&lt;/Text&gt;
+        &lt;Text style={styles.cardBody}&gt;
+          navigation.getParent().openDrawer()
+          відкриває Drawer з дочірнього Stack-екрану.
+        &lt;/Text&gt;
+      &lt;/View&gt;
+
+      <span class="cm">{/* Відкриваємо Drawer з вкладеного Stack-екрану */}</span>
+      &lt;TouchableOpacity
+        style={styles.menuBtn}
+        onPress={() =&gt; navigation.<span class="fn">getParent</span>().<span class="fn">openDrawer</span>()}
+      &gt;
+        &lt;Text style={styles.menuBtnText}&gt;☰ Відкрити меню&lt;/Text&gt;
+      &lt;/TouchableOpacity&gt;
+
+      &lt;TouchableOpacity
+        style={styles.backBtn}
+        onPress={() =&gt; navigation.<span class="fn">goBack</span>()}
+      &gt;
+        &lt;Text style={styles.backBtnText}&gt;← Назад&lt;/Text&gt;
+      &lt;/TouchableOpacity&gt;
+    &lt;/View&gt;
+  );
+}
+
+<span class="kw">const</span> styles = <span class="fn">StyleSheet.create</span>({
+  container: { flex: <span class="nu">1</span>, padding: <span class="nu">20</span>, backgroundColor: <span class="st">'#f0f0f8'</span> },
+  title:     { fontSize: <span class="nu">22</span>, fontWeight: <span class="st">'700'</span>, marginBottom: <span class="nu">16</span> },
+  card:      { backgroundColor: <span class="st">'#fff'</span>, borderRadius: <span class="nu">14</span>,
+               padding: <span class="nu">14</span>, marginBottom: <span class="nu">10</span>, elevation: <span class="nu">2</span> },
+  cardTitle: { fontSize: <span class="nu">14</span>, fontWeight: <span class="st">'700'</span>, marginBottom: <span class="nu">4</span> },
+  cardBody:  { fontSize: <span class="nu">12</span>, color: <span class="st">'#888'</span>, lineHeight: <span class="nu">18</span> },
+  menuBtn:   { borderWidth: <span class="nu">1.5</span>, borderColor: <span class="st">'#6C63FF'</span>,
+               borderRadius: <span class="nu">12</span>, padding: <span class="nu">12</span>, alignItems: <span class="st">'center'</span>,
+               marginBottom: <span class="nu">8</span> },
+  menuBtnText:{ color: <span class="st">'#6C63FF'</span>, fontWeight: <span class="st">'700'</span> },
+  backBtn:   { backgroundColor: <span class="st">'#6C63FF'</span>, borderRadius: <span class="nu">12</span>,
+               padding: <span class="nu">14</span>, alignItems: <span class="st">'center'</span> },
+  backBtnText:{ color: <span class="st">'#fff'</span>, fontWeight: <span class="st">'700'</span> },
+});</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ TASK 3 ══════════════════ -->
+<div id="mp2" class="panel">
+  <div class="pw"><div class="plbl">Превʼю · натисни на користувача</div>
+    <div class="phone"><div class="notch"></div>
+      <div class="screen" id="s3">
+        <div class="drawer-overlay" id="d3_ov" onclick="closeDrawer(3)"></div>
+        <div class="drawer" id="d3">
+          <div class="drawer-header">
+            <div class="drawer-av">🧑‍💻</div>
+            <div class="drawer-name">Олексій Петренко</div>
+            <div class="drawer-email">oleksii@example.com</div>
+          </div>
+          <div class="drawer-items">
+            <button class="drawer-item" onclick="d3Nav('list')"><span class="drawer-icon">👥</span><span class="drawer-label" id="d3l_list">Список користувачів</span></button>
+            <button class="drawer-item" onclick="d3Nav('uprofile')"><span class="drawer-icon">👤</span><span class="drawer-label" id="d3l_uprofile">Профіль користувача</span></button>
+          </div>
+          <div class="drawer-footer"><button class="drawer-logout" onclick="showAlert(3)">🚪 Вийти</button></div>
+        </div>
+        <!-- User list screen -->
+        <div id="d3_list" style="display:flex;flex-direction:column;height:100%">
+          <div class="nav-bar">
+            <button class="nav-hamburger" onclick="openDrawer(3)">☰</button>
+            <span class="nav-title">👥 Список користувачів</span>
+          </div>
+          <div class="page">
+            <div class="page-sub">Оберіть користувача зі списку</div>
+            <button class="user-item" onclick="d3SelectUser({name:'Марія Коваленко',role:'UI/UX Designer',emoji:'👩',id:1})">
+              <div class="user-av" style="background:linear-gradient(135deg,#ff9a9e,#fad0c4)">👩</div>
+              <div><div class="user-name">Марія Коваленко</div><div class="user-role">UI/UX Designer</div></div>
+              <span class="user-arrow">›</span>
+            </button>
+            <button class="user-item" onclick="d3SelectUser({name:'Дмитро Шевченко',role:'Backend Developer',emoji:'👨',id:2})">
+              <div class="user-av" style="background:linear-gradient(135deg,#a1c4fd,#c2e9fb)">👨</div>
+              <div><div class="user-name">Дмитро Шевченко</div><div class="user-role">Backend Developer</div></div>
+              <span class="user-arrow">›</span>
+            </button>
+            <button class="user-item" onclick="d3SelectUser({name:'Анна Мельник',role:'Product Manager',emoji:'👩‍💼',id:3})">
+              <div class="user-av" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)">👩‍💼</div>
+              <div><div class="user-name">Анна Мельник</div><div class="user-role">Product Manager</div></div>
+              <span class="user-arrow">›</span>
+            </button>
+            <button class="user-item" onclick="d3SelectUser({name:'Іван Бондаренко',role:'DevOps Engineer',emoji:'🧑‍💻',id:4})">
+              <div class="user-av" style="background:linear-gradient(135deg,#d4fc79,#96e6a1)">🧑‍💻</div>
+              <div><div class="user-name">Іван Бондаренко</div><div class="user-role">DevOps Engineer</div></div>
+              <span class="user-arrow">›</span>
+            </button>
+          </div>
+        </div>
+        <!-- User profile screen -->
+        <div id="d3_uprofile" style="display:none;flex-direction:column;height:100%">
+          <div class="nav-bar">
+            <button class="nav-back" onclick="d3Nav('list')">← Назад</button>
+            <span class="nav-title" id="d3_ptitle">Профіль</span>
+            <button class="nav-menu-icon" onclick="openDrawer(3)">☰</button>
+          </div>
+          <div class="page" style="text-align:center;padding-top:16px" id="d3_profile_body">
+            <div style="font-size:48px;margin-bottom:8px" id="d3_pemoji">👤</div>
+            <div class="page-title" style="text-align:center" id="d3_pname">—</div>
+            <div class="page-sub" style="text-align:center;margin-bottom:14px" id="d3_prole">—</div>
+            <div class="card" style="text-align:left"><div class="card-title">📨 Параметр route.params</div><div class="card-body" id="d3_params" style="font-family:monospace;font-size:10px;color:#6C63FF"></div></div>
+            <div class="card" style="text-align:left"><div class="card-title">📧 Контакти</div><div class="card-body" id="d3_email">—</div></div>
+          </div>
+        </div>
+        <div class="sim-alert" id="alert3">
+          <div class="sim-alert-box"><div class="sim-alert-title">👋 До побачення!</div><div class="sim-alert-body">Кнопка Вийти спрацювала!</div><button class="sim-alert-btn" onclick="hideAlert(3)">OK</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cw">
+    <div class="ctabs">
+      <button class="ct active" onclick="SC(2,0)">App.js</button>
+      <button class="ct" onclick="SC(2,1)">UserListScreen.js</button>
+      <button class="ct" onclick="SC(2,2)">UserProfileScreen.js</button>
+    </div>
+    <div class="cb">
+<div id="c2-0" class="cf active"><span class="cm">// App.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { NavigationContainer } <span class="kw">from</span> <span class="st">'@react-navigation/native'</span>;
+<span class="kw">import</span> { createDrawerNavigator }
+  <span class="kw">from</span> <span class="st">'@react-navigation/drawer'</span>;
+<span class="kw">import</span> { createStackNavigator }
+  <span class="kw">from</span> <span class="st">'@react-navigation/stack'</span>;
+<span class="kw">import</span> UserListScreen    <span class="kw">from</span> <span class="st">'./screens/UserListScreen'</span>;
+<span class="kw">import</span> UserProfileScreen <span class="kw">from</span> <span class="st">'./screens/UserProfileScreen'</span>;
+<span class="kw">import</span> CustomDrawer      <span class="kw">from</span> <span class="st">'./components/CustomDrawer'</span>;
+
+<span class="kw">const</span> Drawer = <span class="fn">createDrawerNavigator</span>();
+<span class="kw">const</span> Stack  = <span class="fn">createStackNavigator</span>();
+
+<span class="cm">// Stack для секції "Список" — щоб переходити на профіль</span>
+<span class="kw">function</span> <span class="fn">UsersStack</span>() {
+  <span class="kw">return</span> (
+    &lt;Stack.Navigator screenOptions={{ headerShown: <span class="kw">false</span> }}&gt;
+      &lt;Stack.Screen name=<span class="st">"UserList"</span>    component={UserListScreen}    /&gt;
+      &lt;Stack.Screen name=<span class="st">"UserProfile"</span> component={UserProfileScreen} /&gt;
+    &lt;/Stack.Navigator&gt;
+  );
+}
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    &lt;NavigationContainer&gt;
+      &lt;Drawer.Navigator
+        drawerContent={(props) =&gt; &lt;CustomDrawer {...props} /&gt;}
+        screenOptions={{ headerShown: <span class="kw">false</span> }}
+      &gt;
+        &lt;Drawer.Screen
+          name=<span class="st">"UsersStack"</span>
+          component={UsersStack}
+          options={{ title: <span class="st">'Список користувачів'</span> }}
+        /&gt;
+        &lt;Drawer.Screen
+          name=<span class="st">"UserProfile"</span>
+          component={UserProfileScreen}
+          options={{ title: <span class="st">'Профіль користувача'</span> }}
+        /&gt;
+      &lt;/Drawer.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</div>
+<div id="c2-1" class="cf"><span class="cm">// screens/UserListScreen.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, FlatList,
+         TouchableOpacity, StyleSheet } <span class="kw">from</span> <span class="st">'react-native'</span>;
+
+<span class="kw">const</span> USERS = [
+  { id: <span class="st">'1'</span>, name: <span class="st">'Марія Коваленко'</span>,  role: <span class="st">'UI/UX Designer'</span>,    emoji: <span class="st">'👩'</span>  },
+  { id: <span class="st">'2'</span>, name: <span class="st">'Дмитро Шевченко'</span>,  role: <span class="st">'Backend Developer'</span>,  emoji: <span class="st">'👨'</span>  },
+  { id: <span class="st">'3'</span>, name: <span class="st">'Анна Мельник'</span>,     role: <span class="st">'Product Manager'</span>,    emoji: <span class="st">'👩‍💼'</span> },
+  { id: <span class="st">'4'</span>, name: <span class="st">'Іван Бондаренко'</span>, role: <span class="st">'DevOps Engineer'</span>,    emoji: <span class="st">'🧑‍💻'</span> },
+];
+
+<span class="kw">export default function</span> <span class="fn">UserListScreen</span>({ navigation }) {
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;View style={styles.header}&gt;
+        &lt;TouchableOpacity onPress={() =&gt; navigation.<span class="fn">getParent</span>().<span class="fn">openDrawer</span>()}&gt;
+          &lt;Text style={{ fontSize: <span class="nu">22</span> }}&gt;☰&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+        &lt;Text style={styles.headerTitle}&gt;👥 Список користувачів&lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;FlatList
+        data={USERS}
+        keyExtractor={u =&gt; u.id}
+        contentContainerStyle={styles.list}
+        renderItem={({ item }) =&gt; (
+          &lt;TouchableOpacity
+            style={styles.userItem}
+            onPress={() =&gt; {
+              <span class="cm">// 👇 Передаємо весь об'єкт як параметр</span>
+              navigation.<span class="fn">navigate</span>(<span class="st">'UserProfile'</span>, { user: item });
+            }}
+          &gt;
+            &lt;Text style={styles.emoji}&gt;{item.emoji}&lt;/Text&gt;
+            &lt;View style={styles.info}&gt;
+              &lt;Text style={styles.name}&gt;{item.name}&lt;/Text&gt;
+              &lt;Text style={styles.role}&gt;{item.role}&lt;/Text&gt;
+            &lt;/View&gt;
+            &lt;Text style={styles.arrow}&gt;›&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+        )}
+      /&gt;
+    &lt;/View&gt;
+  );
+}</div>
+<div id="c2-2" class="cf"><span class="cm">// screens/UserProfileScreen.js</span>
+<span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>;
+<span class="kw">import</span> { View, Text, TouchableOpacity,
+         StyleSheet } <span class="kw">from</span> <span class="st">'react-native'</span>;
+
+<span class="kw">export default function</span> <span class="fn">UserProfileScreen</span>({ navigation, route }) {
+  <span class="cm">// 👇 Отримуємо параметри з route.params</span>
+  <span class="kw">const</span> { user } = route.params ?? {};
+
+  <span class="cm">// Якщо відкрито напряму через Drawer без параметрів</span>
+  <span class="kw">if</span> (!user) {
+    <span class="kw">return</span> (
+      &lt;View style={styles.empty}&gt;
+        &lt;Text style={styles.emptyText}&gt;
+          Оберіть користувача зі списку
+        &lt;/Text&gt;
+        &lt;TouchableOpacity onPress={() =&gt;
+          navigation.<span class="fn">navigate</span>(<span class="st">'UsersStack'</span>)}&gt;
+          &lt;Text style={styles.link}&gt;→ Перейти до списку&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+    );
+  }
+
+  <span class="kw">return</span> (
+    &lt;View style={styles.container}&gt;
+      &lt;View style={styles.header}&gt;
+        &lt;TouchableOpacity onPress={() =&gt; navigation.<span class="fn">goBack</span>()}&gt;
+          &lt;Text style={styles.back}&gt;← Назад&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+        &lt;Text style={styles.headerTitle}&gt;Профіль&lt;/Text&gt;
+        &lt;TouchableOpacity onPress={() =&gt;
+          navigation.<span class="fn">getParent</span>().<span class="fn">getParent</span>().<span class="fn">openDrawer</span>()}&gt;
+          &lt;Text style={{ fontSize: <span class="nu">22</span> }}&gt;☰&lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      &lt;/View&gt;
+
+      &lt;View style={styles.body}&gt;
+        &lt;Text style={styles.emoji}&gt;{user.emoji}&lt;/Text&gt;
+
+        <span class="cm">{/* Відображення переданого параметра */}</span>
+        &lt;Text style={styles.name}&gt;{user.name}&lt;/Text&gt;
+        &lt;Text style={styles.role}&gt;{user.role}&lt;/Text&gt;
+
+        &lt;View style={styles.card}&gt;
+          &lt;Text style={styles.cardTitle}&gt;📨 route.params&lt;/Text&gt;
+          &lt;Text style={styles.paramsText}&gt;
+            {JSON.<span class="fn">stringify</span>(user, <span class="kw">null</span>, <span class="nu">2</span>)}
+          &lt;/Text&gt;
+        &lt;/View&gt;
+
+        &lt;View style={styles.card}&gt;
+          &lt;Text style={styles.cardTitle}&gt;📧 Контакти&lt;/Text&gt;
+          &lt;Text style={styles.cardBody}&gt;
+            {user.name.<span class="fn">split</span>(<span class="st">' '</span>)[<span class="nu">0</span>].<span class="fn">toLowerCase</span>()}@example.com
+          &lt;/Text&gt;
+        &lt;/View&gt;
+      &lt;/View&gt;
+    &lt;/View&gt;
+  );
+}</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── MAIN TAB SWITCHER ──
+function ST(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  ['mp0','mp1','mp2'].forEach((id,j)=>document.getElementById(id).classList.toggle('active',i===j));
+}
+function SC(p,f){
+  const px='c'+p+'-';
+  document.querySelectorAll('[id^="'+px+'"]').forEach(e=>e.classList.remove('active'));
+  document.getElementById(px+f).classList.add('active');
+  document.querySelectorAll('#mp'+p+' .ct').forEach((t,j)=>t.classList.toggle('active',j===f));
+}
+
+// ── DRAWER HELPERS ──
+function openDrawer(n){
+  document.getElementById('d'+n).classList.add('open');
+  document.getElementById('d'+n+'_ov').classList.add('open');
+}
+function closeDrawer(n){
+  document.getElementById('d'+n).classList.remove('open');
+  document.getElementById('d'+n+'_ov').classList.remove('open');
+}
+function showAlert(n){closeDrawer(n);document.getElementById('alert'+n).classList.add('show');}
+function hideAlert(n){document.getElementById('alert'+n).classList.remove('show');}
+
+// ── TASK 1 nav ──
+function d1Nav(page){
+  closeDrawer(1);
+  ['home','profile'].forEach(p=>{
+    const el=document.getElementById('d1_'+p);
+    if(el)el.style.display=p===page?'block':'none';
+  });
+  document.getElementById('d1_title').textContent=page==='home'?'🏠 Головна':'👤 Профіль';
+  ['home','profile'].forEach(p=>{
+    const lbl=document.getElementById('d1l_'+p);
+    if(lbl){lbl.classList.toggle('active-lbl',p===page);lbl.parentElement.classList.toggle('active',p===page);}
+  });
+}
+
+// ── TASK 2 nav ──
+let d2Current='home';
+function d2Nav(page){
+  closeDrawer(2);
+  ['d2_home','d2_details','d2_profile'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display='none';
+  });
+  document.getElementById('d2_'+page).style.display='flex';
+  d2Current=page;
+  ['home','profile'].forEach(p=>{
+    const lbl=document.getElementById('d2l_'+p);
+    if(lbl){lbl.classList.toggle('active-lbl',p===page);lbl.parentElement.classList.toggle('active',p===page);}
+  });
+}
+function d2GoDetails(title){
+  document.getElementById('d2_home').style.display='none';
+  document.getElementById('d2_details').style.display='flex';
+  document.getElementById('d2_det_title').textContent=title;
+  document.getElementById('d2_det_h').textContent=title;
+  document.getElementById('d2_bc').textContent=title;
+}
+
+// ── TASK 3 nav ──
+function d3Nav(page){
+  closeDrawer(3);
+  ['list','uprofile'].forEach(p=>{
+    const el=document.getElementById('d3_'+p);
+    if(el)el.style.display='none';
+  });
+  document.getElementById('d3_'+page).style.display='flex';
+  ['list','uprofile'].forEach(p=>{
+    const lbl=document.getElementById('d3l_'+p);
+    if(lbl){lbl.classList.toggle('active-lbl',p===page);lbl.parentElement.classList.toggle('active',p===page);}
+  });
+}
+const EMAILS={1:'maria@example.com',2:'dmytro@example.com',3:'anna@example.com',4:'ivan@example.com'};
+function d3SelectUser(u){
+  document.getElementById('d3_list').style.display='none';
+  document.getElementById('d3_uprofile').style.display='flex';
+  document.getElementById('d3_ptitle').textContent=u.name;
+  document.getElementById('d3_pemoji').textContent=u.emoji;
+  document.getElementById('d3_pname').textContent=u.name;
+  document.getElementById('d3_prole').textContent=u.role;
+  document.getElementById('d3_params').textContent=
+    '{\n  name: "'+u.name+'",\n  role: "'+u.role+'",\n  id: '+u.id+'\n}';
+  document.getElementById('d3_email').textContent=EMAILS[u.id];
+}
+</script>
